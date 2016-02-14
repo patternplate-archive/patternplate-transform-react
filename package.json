@@ -1,9 +1,11 @@
 {
   "name": "patternplate-transform-react",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "patternplate transform creating reusable React classes from jsx templates",
   "main": "distribution/index.js",
-  "files": ["distribution"],
+  "files": [
+    "distribution"
+  ],
   "scripts": {
     "start": "npm run watch",
     "clean": "rm -rf distribution",
@@ -64,7 +66,7 @@
     "babel-preset-stage-0": "6.3.13",
     "commitizen": "2.5.0",
     "conventional-changelog-cli": "1.1.1",
-    "conventional-changelog-lint": "0.1.5",
+    "conventional-changelog-lint": "0.1.7",
     "conventional-recommended-bump": "0.1.0",
     "cz-conventional-changelog": "1.1.5",
     "eslint": "1.10.3",
