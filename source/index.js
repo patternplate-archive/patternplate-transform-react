@@ -100,7 +100,7 @@ export default function createReactCodeFactory(application) {
 				vars.push(`this.${key} = ${JSON.stringify(opts.globals[key])};`);
 			}
 		}
-		return `${vars.join('\n')}'\n'${source}`;
+		return `${vars.join('\n')}\n${source}`;
 	}
 
 	function stripImports(source) {
@@ -252,7 +252,7 @@ export default function createReactCodeFactory(application) {
 
 	function matchFirstJsxExpressionAndWrapWithReturn(source) {
 		return source.replace(EXPR, (match, jsxExpr) => {
-			return `return (\n'${jsxExpr}'\n);\n`;
+			return `return (\n${jsxExpr}\n);\n`;
 		});
 	}
 
