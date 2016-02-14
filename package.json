@@ -82,8 +82,7 @@
   },
   "peerDependencies": {
     "babel-core": "^5",
-    "react": ">= 0.13",
-    "react-dom": ">= 0.13"
+    "react": ">= 0.13"
   },
   "dependencies": {
     "chalk": "1.1.1",
