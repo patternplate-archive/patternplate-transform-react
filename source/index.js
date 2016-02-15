@@ -42,7 +42,7 @@ export default function createReactCodeFactory(application) {
 
 		file.buffer = convertCode(file, configuration, opts);
 		const helpers = configuration.resolveDependencies ? buildExternalHelpers(undefined, 'var') : '';
-		const requireBlock = configuration.resolveDependencies ? createRequireBlock(file, configuration.resolveDependencies, opts) : '';
+		const requireBlock = configuration.resolveDependencies ? createRequireBlock(file, configuration, opts) : '';
 
 		file.buffer = [
 			helpers,
@@ -306,7 +306,7 @@ export default function createReactCodeFactory(application) {
 		);
 	}
 
-	function getRequiredDependencies(file, externalHelpers, opts) {
+	function getRequiredDependencies(file, configuration, opts) {
 		// search for actual imports
 		const code = file.buffer;
 		const pool = getSquashedDependencies(file);
@@ -336,12 +336,12 @@ export default function createReactCodeFactory(application) {
 				// must be npm if we did not find one
 				if (dependencyFile) {
 					// dealing with a local dependency, convert it
-					dependencyFile.buffer = convertCode(dependencyFile, externalHelpers, opts);
+					dependencyFile.buffer = convertCode(dependencyFile, configuration, opts);
 					// add it to the hashmap, search for more required dependencies recursively
 					return {
 						...results,
 						[importName]: dependencyFile.buffer,
-						...getRequiredDependencies(dependencyFile, externalHelpers, opts)
+						...getRequiredDependencies(dependencyFile, configuration, opts)
 					};
 				}
 				// check if require.resolve finds a match
@@ -363,8 +363,8 @@ export default function createReactCodeFactory(application) {
 			}, {});
 	}
 
-	function createRequireBlock(file, externalHelpers, opts) {
-		const requiredDependencies = getRequiredDependencies(file, externalHelpers, opts);
+	function createRequireBlock(file, configuration, opts) {
+		const requiredDependencies = getRequiredDependencies(file, configuration, opts);
 
 		const results = Object.entries(requiredDependencies)
 			.map(requiredEntry => {
