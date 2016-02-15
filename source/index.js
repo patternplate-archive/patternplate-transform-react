@@ -40,7 +40,7 @@ export default function createReactCodeFactory(application) {
 			);
 		}
 
-		file.buffer = convertCode(file, configuration.resolveDependencies, opts);
+		file.buffer = convertCode(file, configuration, opts);
 		const helpers = configuration.resolveDependencies ? buildExternalHelpers(undefined, 'var') : '';
 		const requireBlock = configuration.resolveDependencies ? createRequireBlock(file, configuration.resolveDependencies, opts) : '';
 
@@ -53,9 +53,9 @@ export default function createReactCodeFactory(application) {
 		return file;
 	};
 
-	function convertCode(file, resolveDependencies, opts) {
+	function convertCode(file, configuration, opts) {
 		const source = file.buffer.toString('utf-8');
-		const local = omit(merge({}, opts, {externalHelpers: resolveDependencies}), 'globals');
+		const local = omit(merge({}, opts, {externalHelpers: configuration.resolveDependencies}), 'globals');
 
 		// TODO: This is a weak criteria to check if we have to create a wrapper
 		// perhaps we could check for dangling jsx expressions on the last line instead?
@@ -65,16 +65,31 @@ export default function createReactCodeFactory(application) {
 			source.indexOf('createClass') === -1;
 
 		// wrap in a render function if plain jsx
-		file.buffer = isPlain ? createWrappedRenderFunction(file, source, resolveDependencies, opts) : source;
+		file.buffer = isPlain ? createWrappedRenderFunction(file, source, configuration.resolveDependencies, opts) : source;
 		application.log.silly(`${file.pattern.id}:${file.name} is plain jsx ${signature}`);
 
-		// rewrite imports to global names
-		if (resolveDependencies) {
+		if (configuration.resolveDependencies) {
+			// rewrite imports to global names
 			file.buffer = rewriteImportsToGlobalNames(file, file.buffer);
+		} else if (configuration.convertDependencies) {
+			// transform dependencies
+			file.dependencies = convertDependencies(file, configuration, opts);
 		}
 
 		file.buffer = transform(file.buffer, local).code;
 		return file.buffer;
+	}
+
+	function convertDependencies(file, configuration, opts) {
+		return Object.entries(file.dependencies)
+			.reduce((registry, entry) => {
+				const [dependencyName, dependencyFile] = entry;
+				dependencyFile.buffer = convertCode(dependencyFile, configuration, opts);
+				return {
+					...registry,
+					[dependencyName]: dependencyFile
+				};
+			}, {});
 	}
 
 	function createWrappedRenderFunction(file, source, resolveDependencies, opts) {
