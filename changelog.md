@@ -1,3 +1,13 @@
+<a name="0.2.0"></a>
+# [0.2.0](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.1.0...v0.2.0) (2016-02-15)
+
+
+### Features
+
+* add possibility to transform all dependencies ([5c655cc](https://github.com/sinnerschrader/patternplate-transform-react/commit/5c655cc))
+
+
+
 <a name="0.1.0"></a>
 # 0.1.0 (2016-02-14)
 
