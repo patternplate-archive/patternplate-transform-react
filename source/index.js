@@ -20,7 +20,7 @@ export default function createReactCodeFactory(application) {
 	const ATTRIBUTES = `(?:\\s+${ATTRIBUTE})*`;
 	const TAG_END = '\\s*\\/?>';
 	const EXPR = new RegExp(`\n\s*(${TAG_START}${ATTRIBUTES}${TAG_END}[^]*)`, 'gi');
-	const IMPORT = /(import\s+(?:\* as\s)?[^\s]+\s+from\s+["'])([^"']+)(["'];)/g;
+	const IMPORT = /(import(?:.+?)?\s+["'])([^"']+)(["'];?)/g;
 	const REQUIRE = /require\(["'](.+?)["']\)/g;
 
 	const signature = chalk.grey('[transform:react]');
