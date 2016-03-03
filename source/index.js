@@ -239,7 +239,8 @@ export default function createReactCodeFactory(application) {
 					return results;
 				}
 
-				const hasUsage = source.indexOf(`${className}.`) > -1 || source.indexOf(`(${className}`);
+				const hasUsage = source.indexOf(`${className}.`) > -1 ||
+					source.indexOf(`(${className}`) > -1;
 
 				if (hasUsage) {
 					// implicit imports are deprecated
