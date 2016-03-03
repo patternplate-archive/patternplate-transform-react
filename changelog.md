@@ -1,3 +1,13 @@
+<a name="0.2.3"></a>
+## [0.2.3](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.2.2...v0.2.3) (2016-03-03)
+
+
+### Bug Fixes
+
+* **detection:** correct implicit dependency usage detection ([a6b123a](https://github.com/sinnerschrader/patternplate-transform-react/commit/a6b123a))
+
+
+
 <a name="0.2.2"></a>
 ## [0.2.2](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.2.1...v0.2.2) (2016-02-17)
 
