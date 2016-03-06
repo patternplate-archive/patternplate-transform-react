@@ -11,10 +11,10 @@
     "clean": "rm -rf distribution",
     "prepare": "mkdir -p distribution",
     "prebuild": "parallelshell 'npm run test' 'npm run clean && npm run prepare'",
-    "build": "babel source --out-dir distribution && echo '' || notify -t $npm_package_name -m 'Build failed! 😢'",
+    "build": "babel source --out-dir distribution",
     "postbuild": "npm run notify",
     "test": "(eslint source/**/*.js && jsonlint-cli **/*.json) && echo '' || notify -t $npm_package_name -m 'Linting failed! 😢'",
-    "watch": "watch 'npm run build' source",
+    "watch": "npm run build -- --watch",
     "notify": "echo 'Build ready, happy hacking! ✊' && notify -t $npm_package_name -m 'Build ready, happy hacking! ✊'",
     "commit": "git-cz",
     "commitmsg": "conventional-changelog-lint -e",
@@ -82,7 +82,7 @@
     "jsonlint-cli": "0.2.7",
     "node-notifier": "4.4.0",
     "parallelshell": "2.0.0",
-    "react": ">= 0.13",
+    "react": "0.14.7",
     "react-dom": ">= 0.13",
     "watch": "0.17.1"
   },
@@ -91,9 +91,16 @@
     "react": ">= 0.13"
   },
   "dependencies": {
+    "babel-generator": "6.6.5",
+    "babel-template": "6.6.5",
+    "babel-traverse": "6.6.5",
+    "babel-types": "6.6.5",
+    "babylon-ast-dependencies": "1.0.2",
     "chalk": "1.1.1",
+    "js-linker": "0.0.3",
     "lodash": "4.3.0",
-    "lodash.merge": "4.1.0",
-    "pascal-case": "1.1.2"
+    "pascal-case": "1.1.2",
+    "semver-compare": "1.0.0",
+    "try-require": "1.2.1"
   }
 }
