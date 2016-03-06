@@ -12,7 +12,6 @@ import traverse from 'babel-traverse';
 import {parse} from 'babylon';
 import astDependencies from 'babylon-ast-dependencies';
 import chalk from 'chalk';
-import linker from 'js-linker';
 import {kebabCase, merge} from 'lodash';
 import pascalCase from 'pascal-case';
 import React from 'react';
@@ -97,7 +96,10 @@ function deprecateImplicitDependencies(application, file, registry) {
 			Object.entries(registry)
 				.map(item => {
 					const [unboundIdentifier, importName] = item;
-					return `import ${unboundIdentifier} from '${importName}'`;
+					const name = importName === 'pattern' ?
+						'Pattern' :
+						importName;
+					return `import ${unboundIdentifier} from '${name}';`;
 				}).join('\n'),
 			'\n\n'
 		].join('')
@@ -394,12 +396,18 @@ function getResolvableDependencies(ast, file) {
 				'Pattern' :
 				dependencyName;
 
+			const indexDependencies = file.dependencies.Pattern ?
+				file.dependencies.Pattern :
+				{};
+
 			const resolveable = name in file.dependencies ||
+				name in indexDependencies ||
 				resolve(name);
 
 			if (resolveable) {
 				return name;
 			}
+
 			const err = new Error([
 				`Could not resolve dependency ${name}`,
 				`in ${file.pattern.id}:${file.name},`,
@@ -437,7 +445,7 @@ function convertCode(application, file, settings) {
 				'functionSent'
 			]
 		});
-		
+
 	application.cache.set(parseKey, file.mtime, ast);
 
 	// manifest.name is used as name for wrapped components
@@ -461,8 +469,6 @@ function convertCode(application, file, settings) {
 	// get array of required dependency names
 	const dependencyNames = getResolvableDependencies(component, file);
 
-	// @todo: settings.resolveDependencies will become bundleDependencies
-	// in the future for this decision
 	if (settings.convertDependencies || settings.resolveDependencies) {
 		// convert squashed dependencies
 		file.dependencies = dependencyNames.reduce((registry, name) => {
@@ -475,42 +481,18 @@ function convertCode(application, file, settings) {
 		}, {});
 	}
 
-	if (settings.resolveDependencies) {
-		// resolve dependency names to global names
-		traverse(component, {
-			ImportDeclaration(path) {
-				const name = path.node.name === 'pattern' ?
-					'Pattern' :
-					path.node.name;
-				const dependency = file.dependencies[name];
-				if (dependency) {
-					path.node.source.value = dependency.path;
-				}
-			},
-			CallExpression(path) {
-				if (path.node.callee.name === 'require') {
-					const importName = path.node.arguments[0];
-					const name = importName.value === 'pattern' ?
-						'Pattern' :
-						importName.value;
-					const dependency = file.dependencies[name];
-					if (dependency) {
-						importName.value = dependency.path;
-					}
-				}
-			}
-		});
-	}
-
 	// TODO: use transformFromAst when switching to babel 6
 	// TODO: transform should move to babel transform completely
 	const {code} = application.cache.get(transformKey, file.mtime) ||
-		transform(generate(ast.program).code, settings.opts || {});
+		transform(generate(component.program).code, settings.opts || {});
 
 	application.cache.set(transformKey, file.mtime, {code});
-	
-	// Return file with new buffer
+
 	file.buffer = code;
+	file.meta.react = merge({}, file.meta.react, {
+		ast: component,
+		dependencyNames
+	});
 	return file;
 }
 
@@ -521,11 +503,8 @@ function getReactTransformFunction(application, config) {
 		if (hasGlobalsConfiguration(settings.opts || {})) {
 			deprecateGlobals(application);
 		}
-		
-		const converted = convertCode(application, file, settings);
-		const bundled = await bundleCode(application, file, settings);
 
-		return bundled;
+		return convertCode(application, file, settings);
 	};
 }
 
