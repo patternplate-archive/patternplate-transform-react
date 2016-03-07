@@ -40,6 +40,7 @@ export default function createReactCodeFactory(application) {
 			);
 		}
 
+		configuration.cache = application.cache;
 		file.buffer = convertCode(file, configuration, opts);
 		const helpers = configuration.resolveDependencies ? buildExternalHelpers(undefined, 'var') : '';
 		const requireBlock = configuration.resolveDependencies ? createRequireBlock(file, configuration, opts) : '';
@@ -54,6 +55,29 @@ export default function createReactCodeFactory(application) {
 	};
 
 	function convertCode(file, configuration, opts) {
+		if (file.converted) {
+			return file.buffer;
+		}
+		const key = [
+			'react',
+			'convert',
+			file.path,
+			configuration.convertDependencies ? 'convert' : null,
+			configuration.resolveDependencies ? 'resolve' : null
+		].join(':');
+
+		const cached = configuration.cache.get(key, file.fs.node.mtime);
+
+		if (cached && !configuration.convertDependencies) {
+			return cached;
+		}
+
+		if (cached && configuration.convertDependencies) {
+			file.buffer = cached;
+			convertDependencies(file, configuration, opts);
+			return file.buffer;
+		}
+
 		const source = file.buffer.toString('utf-8');
 		const local = omit(merge({}, opts, {externalHelpers: configuration.resolveDependencies}), 'globals');
 
@@ -73,23 +97,45 @@ export default function createReactCodeFactory(application) {
 			file.buffer = rewriteImportsToGlobalNames(file, file.buffer);
 		} else if (configuration.convertDependencies) {
 			// transform dependencies
-			file.dependencies = convertDependencies(file, configuration, opts);
+			convertDependencies(file, configuration, opts);
 		}
 
 		file.buffer = transform(file.buffer, local).code;
+		file.converted = true;
+		configuration.cache.set(key, file.fs.node.mtime, file.buffer);
 		return file.buffer;
 	}
 
 	function convertDependencies(file, configuration, opts) {
-		return Object.entries(file.dependencies)
-			.reduce((registry, entry) => {
-				const [dependencyName, dependencyFile] = entry;
-				dependencyFile.buffer = convertCode(dependencyFile, configuration, opts);
-				return {
-					...registry,
-					[dependencyName]: dependencyFile
-				};
-			}, {});
+		const dependencies = getSquashedDependencies(file);
+		// const localPool = Object.entries(file.dependencies);
+		return dependencies
+			// do not convert twice
+			.filter(dep => !dep.converted)
+			// do only convert if imported/required
+			// when the browserify transform learns to add
+			// only stuff actually required we can filter here
+			/* .filter(dep => {
+				 if (dep.pattern.id === file.pattern.id) {
+					return true;
+				}
+				const registered = find(localPool, item => {
+					const [, poolItem] = item;
+					return poolItem.pattern.id === dep.pattern.id;
+				}) || [];
+				const [localName] = registered;
+				if (!localName) {
+					return false;
+				}
+				const namedImportRegex = RegExp(`import(?:.+)["']${localName}["'];?`, 'g');
+				const namedRequireRegex = RegExp(`/require\(["']${localName}["']\)/`, 'g');
+
+				return file.buffer.toString().match(namedImportRegex) ||
+					file.buffer.toString().match(namedRequireRegex);
+			}) */
+			.forEach(dep => {
+				dep.buffer = convertCode(dep, configuration, opts);
+			});
 	}
 
 	function createWrappedRenderFunction(file, source, resolveDependencies, opts) {
