@@ -1,3 +1,13 @@
+<a name="0.2.4"></a>
+## [0.2.4](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.2.3...v0.2.4) (2016-03-07)
+
+
+### Bug Fixes
+
+* **transformation:** avoid recursive work when converting dependencies ([f6d2b5b](https://github.com/sinnerschrader/patternplate-transform-react/commit/f6d2b5b)), closes [sinnerschrader/patternplate#34](https://github.com/sinnerschrader/patternplate/issues/34)
+
+
+
 <a name="0.2.3"></a>
 ## [0.2.3](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.2.2...v0.2.3) (2016-03-03)
 
