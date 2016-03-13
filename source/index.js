@@ -4,6 +4,7 @@ import template from 'babel-template';
 import {
 	exportDefaultDeclaration,
 	identifier,
+	isExportDefaultDeclaration,
 	react as reactType,
 	stringLiteral
 } from 'babel-types';
@@ -249,9 +250,14 @@ function createReactComponent(ast, name) {
 	// Get the last JSX expression in the outermost scope
 	const jsx = getLastPlainJSX(ast);
 
+	// Get user-provided exports
+	const exports = getExports(ast);
+
+	const hasDefaultExport = exports.some(isExportDefaultDeclaration);
+
 	// If no plain jsx was found, assume we deal with
 	// a complete JSX component definition
-	if (!jsx) {
+	if (hasDefaultExport || !jsx) {
 		return ast;
 	}
 
@@ -282,9 +288,6 @@ function createReactComponent(ast, name) {
 			}
 		}
 	});
-
-	// Get user-provided exports
-	const exports = getExports(ast);
 
 	// Stuff we found so far
 	const excludes = [...imports, jsx, ...exports];
