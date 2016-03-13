@@ -79,7 +79,7 @@
     "eslint-config-xo": "0.9.1",
     "eslint-plugin-babel": "3.1.0",
     "husky": "0.10.2",
-    "jsonlint-cli": "0.2.7",
+    "jsonlint-cli": "1.0.0",
     "node-notifier": "4.4.0",
     "parallelshell": "2.0.0",
     "react": "0.14.7",
@@ -95,12 +95,13 @@
     "babel-template": "6.6.5",
     "babel-traverse": "6.6.5",
     "babel-types": "6.6.5",
+    "babylon": "6.7.0",
     "babylon-ast-dependencies": "1.0.2",
     "chalk": "1.1.1",
+    "compare-semver": "1.1.0",
     "js-linker": "0.0.3",
     "lodash": "4.3.0",
     "pascal-case": "1.1.2",
-    "semver-compare": "1.0.0",
     "try-require": "1.2.1"
   }
 }
