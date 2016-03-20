@@ -306,8 +306,6 @@ function createReactComponent(ast, name) {
 	// Remove auxiliary code
 	auxiliary.map(aux => aux.remove());
 
-	// Remove jsx
-	jsx.remove();
 
 	traverse(ast, {
 		Program: {
@@ -318,6 +316,9 @@ function createReactComponent(ast, name) {
 			}
 		}
 	});
+
+	// Remove jsx
+	jsx.remove();
 
 	return ast;
 }
