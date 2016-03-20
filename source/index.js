@@ -404,10 +404,16 @@ function getResolvableDependencies(ast, file) {
 				{};
 
 			const resolveable = name in file.dependencies ||
-				name in indexDependencies ||
-				resolve(name);
+				name in indexDependencies;
 
 			if (resolveable) {
+				return name;
+			}
+
+			const npmResolvable = resolve(name);
+
+			if (npmResolvable) {
+				file.meta.dependencies.push(name);
 				return name;
 			}
 
