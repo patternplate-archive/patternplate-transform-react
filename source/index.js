@@ -264,21 +264,6 @@ function createReactComponent(ast, name) {
 	// Get user-provided imports
 	const imports = getImports(ast);
 
-	if (new Set(imports).has('react') === false) {
-		traverse(ast, {
-			Program: {
-				exit(path) {
-					path.unshiftContainer('body', [
-						importTemplate({
-							LOCAL: identifier('React'),
-							IMPORTED: stringLiteral('react')
-						})
-					]);
-				}
-			}
-		});
-	}
-
 	// If we render a stateless component
 	// rewrite this.props to props
 	traverse(ast, {
@@ -306,7 +291,6 @@ function createReactComponent(ast, name) {
 	// Remove auxiliary code
 	auxiliary.map(aux => aux.remove());
 
-
 	traverse(ast, {
 		Program: {
 			exit(path) {
@@ -316,6 +300,21 @@ function createReactComponent(ast, name) {
 			}
 		}
 	});
+
+	if (new Set(imports).has('react') === false) {
+		traverse(ast, {
+			Program: {
+				exit(path) {
+					path.unshiftContainer('body', [
+						importTemplate({
+							LOCAL: identifier('React'),
+							IMPORTED: stringLiteral('react')
+						})
+					]);
+				}
+			}
+		});
+	}
 
 	// Remove jsx
 	jsx.remove();
