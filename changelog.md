@@ -1,3 +1,22 @@
+<a name="0.3.0-beta1"></a>
+# [0.3.0-beta1](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.2.3...v0.3.0-beta1) (2016-03-22)
+
+
+### Bug Fixes
+
+* **detection:** avoid babylon bug by removing jsx at the end ([74a8006](https://github.com/sinnerschrader/patternplate-transform-react/commit/74a8006))
+* **detection:** check for existence of default export ([c093fcb](https://github.com/sinnerschrader/patternplate-transform-react/commit/c093fcb))
+* **generation:** push npm resolvable names to file dependencies ([39c138f](https://github.com/sinnerschrader/patternplate-transform-react/commit/39c138f))
+* **generation:** require react on top-level ([ad35e45](https://github.com/sinnerschrader/patternplate-transform-react/commit/ad35e45))
+* **system:** add / update missing dependencies ([bd5fc13](https://github.com/sinnerschrader/patternplate-transform-react/commit/bd5fc13))
+
+### Features
+
+* **detection:** resolve transitive demo dependencies properly ([e98bf39](https://github.com/sinnerschrader/patternplate-transform-react/commit/e98bf39))
+* **transformation:** bootstrap ast-based react transformation ([f7f7b99](https://github.com/sinnerschrader/patternplate-transform-react/commit/f7f7b99))
+
+
+
 <a name="0.2.3"></a>
 ## [0.2.3](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.2.2...v0.2.3) (2016-03-03)
 
