@@ -12,10 +12,8 @@
     "prepare": "mkdir -p distribution",
     "prebuild": "parallelshell 'npm run test' 'npm run clean && npm run prepare'",
     "build": "babel source --out-dir distribution",
-    "postbuild": "npm run notify",
-    "test": "(eslint source/**/*.js && jsonlint-cli **/*.json) && echo '' || notify -t $npm_package_name -m 'Linting failed! 😢'",
+    "test": "eslint source/**/*.js && jsonlint-cli **/*.json",
     "watch": "npm run build -- --watch",
-    "notify": "echo 'Build ready, happy hacking! ✊' && notify -t $npm_package_name -m 'Build ready, happy hacking! ✊'",
     "commit": "git-cz",
     "commitmsg": "conventional-changelog-lint -e",
     "changelog": "conventional-changelog --preset angular --infile changelog.md --same-file --output-unreleased",
@@ -78,11 +76,7 @@
     "eslint-plugin-babel": "3.1.0",
     "husky": "0.10.2",
     "jsonlint-cli": "1.0.1",
-    "node-notifier": "4.4.0",
-    "parallelshell": "2.0.0",
-    "react": "0.14.7",
-    "react-dom": "0.14.7",
-    "watch": "0.17.1"
+    "parallelshell": "2.0.0"
   },
   "peerDependencies": {
     "babel-core": "^5",
