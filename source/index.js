@@ -173,16 +173,26 @@ function getLastPlainJSX(ast) {
 }
 
 /**
+ * @typedef Imports
+ * @type Object
+ * @property {Array}  an Array of the paths belonging to
+						import statements / require calls
+ * @property {Array}  an Array of the imported names
+ */
+
+/**
  * Get all require calls and import statements
- * @param  {Object} ast to search in
- * @return {Array}      ast nodes of dependency imports
+ * @param  {Object}   ast to search in
+ * @return {Imports}  The import paths and their names
  */
 function getImports(ast) {
 	const imports = [];
+	const identifiers = [];
 
 	traverse(ast, {
 		ImportDeclaration(path) {
 			imports.push(path.node);
+			identifiers.push(path.node.source.value);
 		},
 		CallExpression(path) {
 			if (path.node.callee.name === 'require') {
@@ -191,11 +201,12 @@ function getImports(ast) {
 				} else {
 					imports.push(path.parent);
 				}
+				identifiers.push(path.node.arguments[0]);
 			}
 		}
 	});
 
-	return imports;
+	return {imports, identifiers};
 }
 
 /**
@@ -262,7 +273,7 @@ function createReactComponent(ast, name) {
 	}
 
 	// Get user-provided imports
-	const imports = getImports(ast);
+	const {imports, identifiers} = getImports(ast);
 
 	// If we render a stateless component
 	// rewrite this.props to props
@@ -301,7 +312,7 @@ function createReactComponent(ast, name) {
 		}
 	});
 
-	if (new Set(imports).has('react') === false) {
+	if (identifiers.includes('react') === false) {
 		traverse(ast, {
 			Program: {
 				exit(path) {
