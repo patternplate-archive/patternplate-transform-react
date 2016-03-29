@@ -445,8 +445,9 @@ function getResolvableDependencies(ast, file) {
 function convertCode(application, file, settings) {
 	const parseKey = ['react', 'parse', file.path].join(':');
 	const transformKey = ['react', 'transform', file.path].join(':');
+	const mtime = file.mtime || file.fs.node.mtime;
 
-	const ast = application.cache.get(parseKey, file.mtime) ||
+	const ast = application.cache.get(parseKey, mtime) ||
 		parse(file.buffer.toString('utf-8'), {
 			allowImportExportEverywhere: true,
 			allowReturnOutsideFunction: true,
@@ -466,7 +467,7 @@ function convertCode(application, file, settings) {
 			]
 		});
 
-	application.cache.set(parseKey, file.mtime, ast);
+	application.cache.set(parseKey, mtime, ast);
 
 	// manifest.name is used as name for wrapped components
 	const manifestName = file.pattern.manifest.name;
@@ -503,10 +504,10 @@ function convertCode(application, file, settings) {
 
 	// TODO: use transformFromAst when switching to babel 6
 	// TODO: transform should move to babel transform completely
-	const {code} = application.cache.get(transformKey, file.mtime) ||
+	const {code} = application.cache.get(transformKey, mtime) ||
 		transform(generate(component.program).code, settings.opts || {});
 
-	application.cache.set(transformKey, file.mtime, {code});
+	application.cache.set(transformKey, mtime, {code});
 
 	file.buffer = code;
 	file.meta.react = merge({}, file.meta.react, {
