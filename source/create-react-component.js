@@ -39,15 +39,19 @@ export default function createReactComponent(ast, name) {
 	// Get user-provided imports
 	const {imports, identifiers} = getImports(ast);
 
-	// If we render a stateless component
+	// If we create
+	// - a stateless component
+	// - based on plain jsx
 	// rewrite this.props to props
-	traverse(ast, {
-		MemberExpression(path) {
-			if (path.matchesPattern('this.props')) {
-				path.replaceWith(identifier('props'));
+	if (supportsStatelessComponents(React)) {
+		traverse(ast, {
+			MemberExpression(path) {
+				if (path.matchesPattern('this.props')) {
+					path.replaceWith(identifier('props'));
+				}
 			}
-		}
-	});
+		});
+	}
 
 	// Stuff we found so far
 	const excludes = [...imports, jsx, ...exports];
