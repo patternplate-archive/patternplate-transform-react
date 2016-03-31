@@ -14,11 +14,13 @@ import getExports from './get-exports';
 import getImports from './get-imports';
 import getLastPlainJSX from './get-last-plain-jsx';
 import importTemplate from './import-template';
+import supportsStatelessComponents from './supports-stateless-components';
 
 /**
  * Create a React component definition from ast if needed.
  * Wraps a plain jsx template into an appropriate component if needed
  * @param  {Object} ast to wrap
+ * @param  {string} name of the component
  * @return {Object} ast containing the wrapped component
  */
 export default function createReactComponent(ast, name) {
@@ -28,9 +30,10 @@ export default function createReactComponent(ast, name) {
 	// Get user-provided exports
 	const exports = getExports(ast);
 
+	// Check for default export
 	const hasDefaultExport = exports.some(isExportDefaultDeclaration);
 
-	// If no plain jsx was found, assume we deal with
+	// If a default export OR plain jsx was found, assume we deal with
 	// a complete JSX component definition
 	if (hasDefaultExport || !jsx) {
 		return ast;
@@ -59,17 +62,20 @@ export default function createReactComponent(ast, name) {
 	// Get all remaining code
 	const auxiliary = getAuxiliary(ast, excludes);
 
+	// Get a react component ast
 	const component = getComponentTemplate(React)({
 		AUXILIARY: auxiliary.map(path => path.node),
 		JSX: jsx,
 		NAME: identifier(name)
 	});
 
+	// Create a default export for it
 	const defaultExport = exportDefaultDeclaration(component);
 
 	// Remove auxiliary code
 	auxiliary.map(aux => aux.remove());
 
+	// Push the created react component into ast
 	traverse(ast, {
 		Program: {
 			exit(path) {
@@ -80,6 +86,7 @@ export default function createReactComponent(ast, name) {
 		}
 	});
 
+	// Add React to imports if not imported already
 	if (identifiers.includes('react') === false) {
 		traverse(ast, {
 			Program: {
@@ -97,6 +104,5 @@ export default function createReactComponent(ast, name) {
 
 	// Remove jsx
 	jsx.remove();
-
 	return ast;
 }
