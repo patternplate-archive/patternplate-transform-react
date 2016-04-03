@@ -11,6 +11,8 @@ export default source => {
 				'jsx',
 				'asyncFunctions',
 				'classConstructorCall',
+				'doExpressions',
+				'trailingFunctionCommas',
 				'objectRestSpread',
 				'decorators',
 				'classProperties',

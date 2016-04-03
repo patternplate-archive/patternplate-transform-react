@@ -40,10 +40,14 @@ function convertCode(application, file, settings) {
 	};
 
 	const options = settings.opts || {globals: {}};
+	const parseKey = ['react', 'parse', file.path].join(':');
 	const transformKey = ['react', 'transform', file.path].join(':');
 	const mtime = file.mtime || file.fs.node.mtime;
 
-	const ast = parse(file.buffer.toString('utf-8'));
+	const ast = application.cache.get(parseKey, mtime) ||
+		parse(file.buffer.toString('utf-8'));
+
+	application.cache.set(parseKey, mtime, ast);
 
 	// manifest.name is used as name for wrapped components
 	const manifestName = file.pattern.manifest.name;
@@ -99,7 +103,11 @@ function convertCode(application, file, settings) {
 
 	// TODO: use transformFromAst when switching to babel 6
 	// TODO: transform should move to babel transform completely
-	const {code} = transform(generate(component.program).code, babelOptions);
+	const {code} = application.cache.get(transformKey, mtime) ||
+		transform(
+			generate(component.program).code,
+			babelOptions
+		);
 
 	application.cache.set(transformKey, mtime, {code});
 
