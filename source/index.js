@@ -1,16 +1,16 @@
 import chalk from 'chalk';
 import generate from 'babel-generator';
 import {transform} from 'babel-core';
-import {parse} from 'babylon';
 import {merge, omit} from 'lodash';
 import pascalCase from 'pascal-case';
 
 import createReactComponent from './create-react-component';
-import deprecateGlobalConfiguration from './deprecate-global-configuration';
+// import deprecateGlobalConfiguration from './deprecate-global-configuration';
 import deprecateImplicitDependencies from './deprecate-implicit-dependencies';
 import getImplicitDependencies from './get-implicit-dependencies';
 import getResolvableDependencies from './get-resolvable-dependencies';
 import injectImplicitDependencies from './inject-implicit-dependencies';
+import parse from './parse';
 
 function convertCode(application, file, settings) {
 	const deprecationMapping = {
@@ -18,11 +18,12 @@ function convertCode(application, file, settings) {
 			const lines = file.source
 				.toString()
 				.split('\n')
-				.slice(item.line - 2, 4);
+				.slice(Math.max(item.line - 2, 0), 4);
 
 			const message = [
 				`[ ⚠  Deprecation ⚠ ]`,
 				`${item.type} "${item.key}" is deprecated.`,
+				`Use ${item.alternative} instead.`,
 				`Found in`,
 				`${file.pattern.id}/${file.name}:${item.line}:${item.column}`
 			].join(' ');
@@ -42,32 +43,14 @@ function convertCode(application, file, settings) {
 	const transformKey = ['react', 'transform', file.path].join(':');
 	const mtime = file.mtime || file.fs.node.mtime;
 
-	const ast = parse(file.buffer.toString('utf-8'),
-		{
-			allowImportExportEverywhere: true,
-			allowReturnOutsideFunction: true,
-			sourceType: 'module',
-			plugins: [
-				'jsx',
-				'asyncFunctions',
-				'classConstructorCall',
-				'objectRestSpread',
-				'decorators',
-				'classProperties',
-				'exportExtensions',
-				'exponentiationOperator',
-				'asyncGenerators',
-				'functionBind',
-				'functionSent'
-			]
-		});
+	const ast = parse(file.buffer.toString('utf-8'));
 
 	// manifest.name is used as name for wrapped components
 	const manifestName = file.pattern.manifest.name;
 
-	if (Object.keys(options.globals).length > 0) {
+	/* if (Object.keys(options.globals).length > 0) {
 		deprecateGlobalConfiguration(application, file, options.globals);
-	}
+	} */
 
 	// Get the component ast
 	const component = createReactComponent(

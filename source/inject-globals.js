@@ -33,15 +33,17 @@ export default (ast, globals = {}) => {
 				const previous = generate(path.node).code
 					.split('.')
 					.slice(1);
+				const replaced = ['global', ...previous]
+					.join('.');
+
 				const pos = path.node.loc.start;
 				ast.deprecations.push({
 					key: previous[0],
 					type: 'globalContextAccess',
 					line: pos.line,
-					column: pos.column
+					column: pos.column,
+					alternative: replaced
 				});
-				const replaced = ['global', ...previous]
-					.join('.');
 				path.replaceWith(identifier(replaced));
 			}
 		}

@@ -106,6 +106,7 @@
     "react": ">= 0.13"
   },
   "dependencies": {
+    "babel-code-frame": "6.7.4",
     "babel-generator": "6.6.5",
     "babel-template": "6.6.5",
     "babel-traverse": "6.6.5",
