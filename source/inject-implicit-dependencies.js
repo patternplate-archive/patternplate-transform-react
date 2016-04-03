@@ -32,3 +32,5 @@ export default function injectImplicitDependencies(ast, dependencies) {
 
 	return ast;
 }
+
+module.change_code = 1; // eslint-disable-line

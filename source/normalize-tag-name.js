@@ -3,3 +3,5 @@ export default function normalizeTagName(tagName) {
 		tagName.toLowerCase() :
 		tagName;
 }
+
+module.change_code = 1; // eslint-disable-line

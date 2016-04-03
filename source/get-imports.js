@@ -35,3 +35,5 @@ export default function getImports(ast) {
 
 	return {imports, identifiers};
 }
+
+module.change_code = 1; // eslint-disable-line

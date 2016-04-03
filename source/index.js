@@ -1,16 +1,18 @@
 import generate from 'babel-generator';
 import {transform} from 'babel-core';
 import {parse} from 'babylon';
-import {merge} from 'lodash';
+import {merge, omit} from 'lodash';
 import pascalCase from 'pascal-case';
 
 import createReactComponent from './create-react-component';
+import deprecateGlobalConfiguration from './deprecate-global-configuration';
 import deprecateImplicitDependencies from './deprecate-implicit-dependencies';
 import getImplicitDependencies from './get-implicit-dependencies';
 import getResolvableDependencies from './get-resolvable-dependencies';
 import injectImplicitDependencies from './inject-implicit-dependencies';
 
 function convertCode(application, file, settings) {
+	const options = settings.opts || {globals:{}};
 	const parseKey = ['react', 'parse', file.path].join(':');
 	const transformKey = ['react', 'transform', file.path].join(':');
 	const mtime = file.mtime || file.fs.node.mtime;
@@ -40,8 +42,16 @@ function convertCode(application, file, settings) {
 	// manifest.name is used as name for wrapped components
 	const manifestName = file.pattern.manifest.name;
 
+	if (Object.keys(options.globals).length > 0) {
+		deprecateGlobalConfiguration(application, file, options.globals);
+	}
+
 	// Get the component ast
-	const component = createReactComponent(ast, pascalCase(manifestName));
+	const component = createReactComponent(
+		ast,
+		pascalCase(manifestName),
+		options.globals
+	);
 
 	// Search for implicit dependencies
 	const implicitDependencyRegistry = getImplicitDependencies(ast);
@@ -72,10 +82,12 @@ function convertCode(application, file, settings) {
 		}, {});
 	}
 
+	const babelOptions = omit(options, ['globals']);
+
 	// TODO: use transformFromAst when switching to babel 6
 	// TODO: transform should move to babel transform completely
 	const {code} = application.cache.get(transformKey, mtime) ||
-		transform(generate(component.program).code, settings.opts || {});
+		transform(generate(component.program).code, babelOptions);
 
 	application.cache.set(transformKey, mtime, {code});
 
@@ -98,3 +110,5 @@ export default application => {
 	const {configuration: {transforms: {react: config}}} = application;
 	return getReactTransformFunction(application, config);
 };
+
+module.change_code = 1; // eslint-disable-line

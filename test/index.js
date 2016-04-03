@@ -40,14 +40,3 @@ test('the resolved object should have buffer key', async t => {
 	const file = await transform(mocks.emptyFile);
 	t.ok(file.hasOwnProperty('buffer'));
 });
-
-/*
-test('it should not modify plain files without style imports', async t => {
-	const {context: {transform}} = t;
-	const {plainFile} = mocks;
-	const expected = plainFile.buffer.toString().replace(/\n/g, '').replace(/\t/g, '  ');
-	const {buffer} = await transform(plainFile);
-	const actual = buffer.toString().replace(/\n/g, '');
-	t.same(actual, expected);
-});
-*/

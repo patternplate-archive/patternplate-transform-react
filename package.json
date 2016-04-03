@@ -15,6 +15,7 @@
     "test": "parallelshell 'npm run test:ava' 'npm run test:lint'",
     "test:ava": "ava",
     "test:lint": "parallelshell 'eslint source/**/*.js' '&& jsonlint-cli **/*.json'",
+    "test:coverage": "nyc ava",
     "watch": "npm run test:ava -- --watch",
     "commit": "git-cz",
     "commitmsg": "conventional-changelog-lint -e",
@@ -96,6 +97,7 @@
     "eslint-plugin-babel": "3.1.0",
     "husky": "0.10.2",
     "jsonlint-cli": "1.0.1",
+    "nyc": "6.1.1",
     "parallelshell": "2.0.0",
     "unindent": "2.0.0"
   },
@@ -115,6 +117,7 @@
     "js-linker": "0.0.3",
     "lodash": "4.3.0",
     "pascal-case": "1.1.2",
-    "try-require": "1.2.1"
+    "try-require": "1.2.1",
+    "unindent": "2.0.0"
   }
 }

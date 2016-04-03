@@ -30,4 +30,6 @@ export default (application, file, registry) => {
 			'\n\n'
 		].join('')
 	);
-}
+};
+
+module.change_code = 1; // eslint-disable-line

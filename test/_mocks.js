@@ -14,14 +14,20 @@ const file = {
 	meta: {
 		dependencies: [],
 		react: {
-			
 		}
 	}
 };
 
+export const OldReact = {
+	version: '0.13.3'
+};
+
+export const React = {
+	version: '0.14.0'
+};
+
 export const config = {
 	opts: {
-		
 	}
 };
 

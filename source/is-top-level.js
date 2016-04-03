@@ -1,5 +1,4 @@
-import outerMostScopeTypes from './outermost-scope-types';
-
+const outerMostScopeTypes = ['Program', 'File'];
 const jsxTypes = ['JSXElement', 'JSXAttribute', 'JSXExpression'];
 
 /**
@@ -15,6 +14,8 @@ export default function isTopLevel(path) {
 	const parent = path.parent || {};
 	const parentType = parent.type || '';
 
-	return outerMostScopeTypes.indexOf(scopType) > -1 &&
+	return outerMostScopeTypes.includes(scopType) &&
 		jsxTypes.indexOf(parentType) === -1;
 }
+
+module.change_code = 1; // eslint-disable-line

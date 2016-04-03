@@ -11,3 +11,5 @@ export default function getLastPlainJSX(ast) {
 		plainJSX[plainJSX.length - 1] :
 		null;
 }
+
+module.change_code = 1; // eslint-disable-line

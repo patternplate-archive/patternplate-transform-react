@@ -40,3 +40,5 @@ export default function getResolvableDependencies(ast, file) {
 			throw err;
 		});
 }
+
+module.change_code = 1; // eslint-disable-line

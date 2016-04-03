@@ -12,3 +12,5 @@ export default function getComponentTemplate(React) {
 		functionTemplate :
 		classTemplate;
 }
+
+module.change_code = 1; // eslint-disable-line

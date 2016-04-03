@@ -1,5 +1,6 @@
 import React from 'react';
 
+import generate from 'babel-generator';
 import {
 	exportDefaultDeclaration,
 	identifier,
@@ -14,6 +15,7 @@ import getExports from './get-exports';
 import getImports from './get-imports';
 import getLastPlainJSX from './get-last-plain-jsx';
 import importTemplate from './import-template';
+import injectGlobals from './inject-globals';
 import supportsStatelessComponents from './supports-stateless-components';
 
 /**
@@ -23,7 +25,7 @@ import supportsStatelessComponents from './supports-stateless-components';
  * @param  {string} name of the component
  * @return {Object} ast containing the wrapped component
  */
-export default function createReactComponent(ast, name) {
+export default function createReactComponent(ast, name, globals = {}) {
 	// Get the last JSX expression in the outermost scope
 	const jsx = getLastPlainJSX(ast);
 
@@ -32,6 +34,12 @@ export default function createReactComponent(ast, name) {
 
 	// Check for default export
 	const hasDefaultExport = exports.some(isExportDefaultDeclaration);
+
+	// Check if the React version supports stateless components
+	const stateless = supportsStatelessComponents(React);
+
+	// Inject globals into ast
+	injectGlobals(ast, globals);
 
 	// If a default export OR plain jsx was found, assume we deal with
 	// a complete JSX component definition
@@ -46,7 +54,7 @@ export default function createReactComponent(ast, name) {
 	// - a stateless component
 	// - based on plain jsx
 	// rewrite this.props to props
-	if (supportsStatelessComponents(React)) {
+	if (stateless) {
 		traverse(ast, {
 			MemberExpression(path) {
 				if (path.matchesPattern('this.props')) {
@@ -106,3 +114,5 @@ export default function createReactComponent(ast, name) {
 	jsx.remove();
 	return ast;
 }
+
+module.change_code = 1; // eslint-disable-line

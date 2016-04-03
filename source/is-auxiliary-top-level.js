@@ -1,4 +1,4 @@
-import outerMostScopeTypes from './outermost-scope-types';
+const outerMostScopeTypes = ['Program', 'File'];
 
 /**
  * Check if an ast node is in the outermost scope of a program or file
@@ -11,3 +11,5 @@ export default function isAuxiliaryTopLevel(path) {
 	return path.type !== 'Program' &&
 		outerMostScopeTypes.indexOf(parentType) > -1;
 }
+
+module.change_code = 1; // eslint-disable-line
