@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import generate from 'babel-generator';
 import {transform} from 'babel-core';
 import {parse} from 'babylon';
@@ -12,13 +13,37 @@ import getResolvableDependencies from './get-resolvable-dependencies';
 import injectImplicitDependencies from './inject-implicit-dependencies';
 
 function convertCode(application, file, settings) {
-	const options = settings.opts || {globals:{}};
-	const parseKey = ['react', 'parse', file.path].join(':');
+	const deprecationMapping = {
+		default(item) {
+			const lines = file.source
+				.toString()
+				.split('\n')
+				.slice(item.line - 2, 4);
+
+			const message = [
+				`[ ⚠  Deprecation ⚠ ]`,
+				`${item.type} "${item.key}" is deprecated.`,
+				`Found in`,
+				`${file.pattern.id}/${file.name}:${item.line}:${item.column}`
+			].join(' ');
+
+			const snippet = [
+				`\n\n`,
+				`${chalk.grey(item.line - 1)} ${lines[0]}\n`,
+				`${chalk.yellow(item.line)} ${lines[1]}\n`,
+				`${chalk.grey(item.line + 1)} ${lines[2]}\n`
+			].join('');
+
+			application.log.warn(chalk.yellow(message), snippet);
+		}
+	};
+
+	const options = settings.opts || {globals: {}};
 	const transformKey = ['react', 'transform', file.path].join(':');
 	const mtime = file.mtime || file.fs.node.mtime;
 
-	const ast = application.cache.get(parseKey, mtime) ||
-		parse(file.buffer.toString('utf-8'), {
+	const ast = parse(file.buffer.toString('utf-8'),
+		{
 			allowImportExportEverywhere: true,
 			allowReturnOutsideFunction: true,
 			sourceType: 'module',
@@ -37,8 +62,6 @@ function convertCode(application, file, settings) {
 			]
 		});
 
-	application.cache.set(parseKey, mtime, ast);
-
 	// manifest.name is used as name for wrapped components
 	const manifestName = file.pattern.manifest.name;
 
@@ -52,6 +75,13 @@ function convertCode(application, file, settings) {
 		pascalCase(manifestName),
 		options.globals
 	);
+
+	(ast.deprecations || [])
+		.forEach(deprecation => {
+			const fn = deprecationMapping[deprecation] ||
+				deprecationMapping.default;
+			fn(deprecation);
+		});
 
 	// Search for implicit dependencies
 	const implicitDependencyRegistry = getImplicitDependencies(ast);
@@ -86,8 +116,7 @@ function convertCode(application, file, settings) {
 
 	// TODO: use transformFromAst when switching to babel 6
 	// TODO: transform should move to babel transform completely
-	const {code} = application.cache.get(transformKey, mtime) ||
-		transform(generate(component.program).code, babelOptions);
+	const {code} = transform(generate(component.program).code, babelOptions);
 
 	application.cache.set(transformKey, mtime, {code});
 

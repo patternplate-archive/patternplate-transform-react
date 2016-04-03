@@ -1,5 +1,7 @@
+import generate from 'babel-generator';
 import traverse from 'babel-traverse';
 import template from 'babel-template';
+import {identifier} from 'babel-types';
 import injectionTemplate from './injection-template';
 
 /**
@@ -11,9 +13,39 @@ import injectionTemplate from './injection-template';
  * @return {Object}            ast with injected globals
  */
 export default (ast, globals = {}) => {
+	ast.deprecations = [];
+
 	if (Object.keys(globals).length === 0) {
 		return ast;
 	}
+
+	// This is some seriously twisted legacy burden
+	// Until recently we injected globals into the scope of react components -
+	// to do this in interop with all react component cases we have to
+	// - find references to this.<globalKey>
+	// - replace it with global.<globalKey>
+	// - deprecate this stuff!
+	traverse(ast, {
+		MemberExpression(path) {
+			const isGlobalLegacyReference = Object.keys(globals)
+				.some(key => path.matchesPattern(`this.${key}`));
+			if (isGlobalLegacyReference) {
+				const previous = generate(path.node).code
+					.split('.')
+					.slice(1);
+				const pos = path.node.loc.start;
+				ast.deprecations.push({
+					key: previous[0],
+					type: 'globalContextAccess',
+					line: pos.line,
+					column: pos.column
+				});
+				const replaced = ['global', ...previous]
+					.join('.');
+				path.replaceWith(identifier(replaced));
+			}
+		}
+	});
 
 	if (ast.hasGlobals) {
 		return ast;

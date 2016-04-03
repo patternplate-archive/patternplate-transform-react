@@ -58,7 +58,12 @@ export default function createReactComponent(ast, name, globals = {}) {
 		traverse(ast, {
 			MemberExpression(path) {
 				if (path.matchesPattern('this.props')) {
-					path.replaceWith(identifier('props'));
+					const sliced = generate(path.node).code
+						.split('.')
+						.slice(1)
+						.join('.');
+
+					path.replaceWith(identifier(sliced));
 				}
 			}
 		});
