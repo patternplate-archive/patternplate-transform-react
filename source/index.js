@@ -1,3 +1,6 @@
+/* @flow */
+import {Application, File, Transform} from './types';
+
 import chalk from 'chalk';
 import generate from 'babel-generator';
 import {transform} from 'babel-core';
@@ -120,15 +123,16 @@ function convertCode(application, file, settings) {
 }
 
 function getReactTransformFunction(application, config) {
-	return async (file, _, configuration) => {
+	return async (file: File, _, configuration) => {
 		const settings = merge({}, config, configuration);
 		return convertCode(application, file, settings);
 	};
 }
 
-export default application => {
+export default (application: Application): Transform => {
 	const {configuration: {transforms: {react: config}}} = application;
 	return getReactTransformFunction(application, config);
 };
 
+/* flow-include var module: { change_code?: number }; module = {}; */
 module.change_code = 1; // eslint-disable-line
