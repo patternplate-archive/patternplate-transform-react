@@ -60,6 +60,16 @@ export const plainFile = {
 	dependencies: {}
 };
 
+export const plainAsiFile = {
+	...file,
+	buffer: new Buffer(unindent(`
+	console.log()
+	// foo bar
+	<div/>
+	`)),
+	dependencies: {}
+};
+
 export const statelessFile = {
 	...file,
 	buffer: new Buffer(unindent(`
