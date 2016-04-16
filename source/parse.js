@@ -67,7 +67,7 @@ function getAsiError(error, source: string) {
 
 	const lastStatement = getLastStatement(partialAst);
 
-	if (lastStatement === null) {
+	if (typeof lastStatement === 'undefined') {
 		return error;
 	}
 
