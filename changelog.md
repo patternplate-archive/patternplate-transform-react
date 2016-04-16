@@ -1,7 +1,5 @@
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.2.3...v0.3.0) (2016-04-16)
-
-
 ### Bug Fixes
 
 * **detection:** avoid babylon bug by removing jsx at the end ([74a8006](https://github.com/sinnerschrader/patternplate-transform-react/commit/74a8006))
@@ -25,7 +23,11 @@
 * **generation:** implement legacy global injection support ([1b92b54](https://github.com/sinnerschrader/patternplate-transform-react/commit/1b92b54))
 * **transformation:** bootstrap ast-based react transformation ([f7f7b99](https://github.com/sinnerschrader/patternplate-transform-react/commit/f7f7b99))
 
+<a name="0.2.4"></a>
+## [0.2.4](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.2.3...v0.2.4) (2016-03-07)
+### Bug Fixes
 
+* **transformation:** avoid recursive work when converting dependencies ([f6d2b5b](https://github.com/sinnerschrader/patternplate-transform-react/commit/f6d2b5b)), closes [sinnerschrader/patternplate#34](https://github.com/sinnerschrader/patternplate/issues/34)
 
 <a name="0.2.3"></a>
 ## [0.2.3](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.2.2...v0.2.3) (2016-03-03)
