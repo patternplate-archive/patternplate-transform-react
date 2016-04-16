@@ -1,12 +1,33 @@
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.2.3...v0.3.0) (2016-04-16)
+### Bug Fixes
+
+* **detection:** avoid babylon bug by removing jsx at the end ([74a8006](https://github.com/sinnerschrader/patternplate-transform-react/commit/74a8006))
+* **detection:** avoid shadowing parser errors ([795ca69](https://github.com/sinnerschrader/patternplate-transform-react/commit/795ca69))
+* **detection:** check for existence of default export ([c093fcb](https://github.com/sinnerschrader/patternplate-transform-react/commit/c093fcb))
+* **generation:** avoid naming collisions during transformation ([40e29b0](https://github.com/sinnerschrader/patternplate-transform-react/commit/40e29b0))
+* **generation:** fix mtime lookup ([df4c8ce](https://github.com/sinnerschrader/patternplate-transform-react/commit/df4c8ce))
+* **generation:** only include react import if it is missing ([244fc6c](https://github.com/sinnerschrader/patternplate-transform-react/commit/244fc6c))
+* **generation:** push npm resolvable names to file dependencies ([39c138f](https://github.com/sinnerschrader/patternplate-transform-react/commit/39c138f))
+* **generation:** require react on top-level ([ad35e45](https://github.com/sinnerschrader/patternplate-transform-react/commit/ad35e45))
+* **generation:** rewrite props deref only for stateless components ([2e5bf3a](https://github.com/sinnerschrader/patternplate-transform-react/commit/2e5bf3a))
+* **system:** add / update missing dependencies ([bd5fc13](https://github.com/sinnerschrader/patternplate-transform-react/commit/bd5fc13))
+
+### Features
+
+* **detection:** allow trailing function commas ([9d1804c](https://github.com/sinnerschrader/patternplate-transform-react/commit/9d1804c))
+* **detection:** enhance error messages for asi errors in plain jsx ([048c407](https://github.com/sinnerschrader/patternplate-transform-react/commit/048c407))
+* **detection:** resolve transitive demo dependencies properly ([e98bf39](https://github.com/sinnerschrader/patternplate-transform-react/commit/e98bf39))
+* **detection:** throw better parser errors ([088d540](https://github.com/sinnerschrader/patternplate-transform-react/commit/088d540))
+* **generation:** enable partial global support ([f6e72a7](https://github.com/sinnerschrader/patternplate-transform-react/commit/f6e72a7))
+* **generation:** implement legacy global injection support ([1b92b54](https://github.com/sinnerschrader/patternplate-transform-react/commit/1b92b54))
+* **transformation:** bootstrap ast-based react transformation ([f7f7b99](https://github.com/sinnerschrader/patternplate-transform-react/commit/f7f7b99))
+
 <a name="0.2.4"></a>
 ## [0.2.4](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.2.3...v0.2.4) (2016-03-07)
-
-
 ### Bug Fixes
 
 * **transformation:** avoid recursive work when converting dependencies ([f6d2b5b](https://github.com/sinnerschrader/patternplate-transform-react/commit/f6d2b5b)), closes [sinnerschrader/patternplate#34](https://github.com/sinnerschrader/patternplate/issues/34)
-
-
 
 <a name="0.2.3"></a>
 ## [0.2.3](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.2.2...v0.2.3) (2016-03-03)

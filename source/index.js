@@ -1,429 +1,138 @@
-/* eslint-disable no-use-before-define, no-loop-func */
-import merge from 'lodash.merge';
-import pascalCase from 'pascal-case';
-import {kebabCase, find, uniq, omit} from 'lodash';
-import {transform, buildExternalHelpers} from 'babel-core';
+/* @flow */
+import {Application, File, Transform} from './types';
+
 import chalk from 'chalk';
-import template from './react-class.tmpl';
-import dependencyTemplate from './require.tmpl';
+import generate from 'babel-generator';
+import {transform} from 'babel-core';
+import {merge, omit} from 'lodash';
+import pascalCase from 'pascal-case';
 
-export default function createReactCodeFactory(application) {
-	const config = application.configuration.transforms.react || {};
-	const TAG_START = '<[-_a-z0-9]+';
-	const ATTRIBUTE_NAME = '[-_a-z0-9]+';
-	const HTML_ATTRIBUTE_VALUE = `"[^"]*"`;
-	const REACT_ATTRIBUTE_VALUE = `{(?:{[^}]*}|[^}]*)}`;
-	const ATTRIBUTE_VALUE = `\\s*=\\s*(?:${HTML_ATTRIBUTE_VALUE}|${REACT_ATTRIBUTE_VALUE})`;
-	const NAMED_ATTRIBUTE = `(?:${ATTRIBUTE_NAME}(?:${ATTRIBUTE_VALUE})?)`;
-	const SPREAD_ATTRIBUTE = '{\\.\\.\\.[^}]+}';
-	const ATTRIBUTE = `(?:${NAMED_ATTRIBUTE}|${SPREAD_ATTRIBUTE})`;
-	const ATTRIBUTES = `(?:\\s+${ATTRIBUTE})*`;
-	const TAG_END = '\\s*\\/?>';
-	const EXPR = new RegExp(`\n\s*(${TAG_START}${ATTRIBUTES}${TAG_END}[^]*)`, 'gi');
-	const IMPORT = /(import(?:.+?)?\s+["'])([^"']+)(["'];?)/g;
-	const REQUIRE = /require\(["'](.+?)["']\)/g;
+import createReactComponent from './create-react-component';
+// import deprecateGlobalConfiguration from './deprecate-global-configuration';
+import deprecateImplicitDependencies from './deprecate-implicit-dependencies';
+import getImplicitDependencies from './get-implicit-dependencies';
+import getResolvableDependencies from './get-resolvable-dependencies';
+import injectImplicitDependencies from './inject-implicit-dependencies';
+import parse from './parse';
 
-	const signature = chalk.grey('[transform:react]');
-	const deprecation = chalk.yellow('[ ⚠  Deprecation ⚠ ]');
+function convertCode(application, file, settings) {
+	const deprecationMapping = {
+		default(item) {
+			const lines = file.source
+				.toString()
+				.split('\n')
+				.slice(Math.max(item.line - 2, 0), 4);
 
-	return async function createReactCode(file, demo, configuration) {
-		const opts = merge({}, config.opts, configuration.opts);
+			const message = [
+				`[ ⚠  Deprecation ⚠ ]`,
+				`${item.type} "${item.key}" is deprecated.`,
+				`Use ${item.alternative} instead.`,
+				`Found in`,
+				`${file.pattern.id}/${file.name}:${item.line}:${item.column}`
+			].join(' ');
 
-		if (opts.globals && Object.keys(opts.globals).length > 0) {
-			application.log.warn(
-				[
-					deprecation,
-					`${chalk.bold('"transforms.react.opts.globals"')} is deprecated`,
-					'and will be removed in version 1.0. Use static properties on a common root component instead.',
-					signature
-				].join(' ')
-			);
+			const snippet = [
+				`\n\n`,
+				`${chalk.grey(item.line - 1)} ${lines[0]}\n`,
+				`${chalk.yellow(item.line)} ${lines[1]}\n`,
+				`${chalk.grey(item.line + 1)} ${lines[2]}\n`
+			].join('');
+
+			application.log.warn(chalk.yellow(message), snippet);
 		}
-
-		configuration.cache = application.cache;
-		file.buffer = convertCode(file, configuration, opts);
-		const helpers = configuration.resolveDependencies ? buildExternalHelpers(undefined, 'var') : '';
-		const requireBlock = configuration.resolveDependencies ? createRequireBlock(file, configuration, opts) : '';
-
-		file.buffer = [
-			helpers,
-			requireBlock,
-			file.buffer
-		].join('\n');
-
-		return file;
 	};
 
-	function convertCode(file, configuration, opts) {
-		if (file.converted) {
-			return file.buffer;
-		}
-		const key = [
-			'react',
-			'convert',
-			file.path,
-			configuration.convertDependencies ? 'convert' : null,
-			configuration.resolveDependencies ? 'resolve' : null
-		].join(':');
+	const options = settings.opts || {globals: {}};
+	const parseKey = ['react', 'parse', file.path].join(':');
+	const transformKey = ['react', 'transform', file.path].join(':');
+	const mtime = file.mtime || file.fs.node.mtime;
 
-		const cached = configuration.cache.get(key, file.fs.node.mtime);
+	const ast = application.cache.get(parseKey, mtime) ||
+		parse(file.buffer.toString('utf-8'));
 
-		if (cached && !configuration.convertDependencies) {
-			return cached;
-		}
+	application.cache.set(parseKey, mtime, ast);
 
-		if (cached && configuration.convertDependencies) {
-			file.buffer = cached;
-			convertDependencies(file, configuration, opts);
-			return file.buffer;
-		}
+	// manifest.name is used as name for wrapped components
+	const manifestName = file.pattern.manifest.name;
 
-		const source = file.buffer.toString('utf-8');
-		const local = omit(merge({}, opts, {externalHelpers: configuration.resolveDependencies}), 'globals');
+	/* if (Object.keys(options.globals).length > 0) {
+		deprecateGlobalConfiguration(application, file, options.globals);
+	} */
 
-		// TODO: This is a weak criteria to check if we have to create a wrapper
-		// perhaps we could check for dangling jsx expressions on the last line instead?
-		// does not contain an es6-class, could possibly checked via babel-ast
-		// does not contain an React.createClass call
-		const isPlain = !source.match(/class(.+?)extends(.+?){/g) &&
-			source.indexOf('createClass') === -1;
+	// Get the component ast
+	const component = createReactComponent(
+		ast,
+		pascalCase(manifestName),
+		options.globals
+	);
 
-		// wrap in a render function if plain jsx
-		file.buffer = isPlain ? createWrappedRenderFunction(file, source, configuration.resolveDependencies, opts) : source;
-		application.log.silly(`${file.pattern.id}:${file.name} is plain jsx ${signature}`);
-
-		if (configuration.resolveDependencies) {
-			// rewrite imports to global names
-			file.buffer = rewriteImportsToGlobalNames(file, file.buffer);
-		} else if (configuration.convertDependencies) {
-			// transform dependencies
-			convertDependencies(file, configuration, opts);
-		}
-
-		file.buffer = transform(file.buffer, local).code;
-		file.converted = true;
-		configuration.cache.set(key, file.fs.node.mtime, file.buffer);
-		return file.buffer;
-	}
-
-	function convertDependencies(file, configuration, opts) {
-		const dependencies = getSquashedDependencies(file);
-		// const localPool = Object.entries(file.dependencies);
-		return dependencies
-			// do not convert twice
-			.filter(dep => !dep.converted)
-			// do only convert if imported/required
-			// when the browserify transform learns to add
-			// only stuff actually required we can filter here
-			/* .filter(dep => {
-				 if (dep.pattern.id === file.pattern.id) {
-					return true;
-				}
-				const registered = find(localPool, item => {
-					const [, poolItem] = item;
-					return poolItem.pattern.id === dep.pattern.id;
-				}) || [];
-				const [localName] = registered;
-				if (!localName) {
-					return false;
-				}
-				const namedImportRegex = RegExp(`import(?:.+)["']${localName}["'];?`, 'g');
-				const namedRequireRegex = RegExp(`/require\(["']${localName}["']\)/`, 'g');
-
-				return file.buffer.toString().match(namedImportRegex) ||
-					file.buffer.toString().match(namedRequireRegex);
-			}) */
-			.forEach(dep => {
-				dep.buffer = convertCode(dep, configuration, opts);
-			});
-	}
-
-	function createWrappedRenderFunction(file, source, resolveDependencies, opts) {
-		const dependencies = writeDependencyImports(file).join('\n');
-		return renderCodeTemplate(source, dependencies, template, pascalCase(file.pattern.manifest.name), opts);
-	}
-
-	function renderCodeTemplate(source, dependencies, templateCode, className, opts) {
-		const injected = addImplicitGlobals(source, opts);
-		const wrapped = matchFirstJsxExpressionAndWrapWithReturn(injected);
-		const stripped = stripImports(wrapped);
-
-		return templateCode
-			.replace('$$dependencies$$', dependencies)
-			.replace('$$class-name$$', className)
-			.replace('$$render-code$$', stripped);
-	}
-
-	function addImplicitGlobals(source, opts) {
-		const vars = [];
-		if (opts && opts.globals) {
-			for (const key of Object.keys(opts.globals)) {
-				vars.push(`this.${key} = ${JSON.stringify(opts.globals[key])};`);
-			}
-		}
-		return `${vars.join('\n')}\n${source}`;
-	}
-
-	function stripImports(source) {
-		return source.replace(IMPORT, '');
-	}
-
-	function writeDependencyImports(file) {
-		const tagExpression = /<([A-Z][a-zA-Z0-9]+?)(?:\s|\/|>)/g;
-		const assignmentExpression = /([A-Z]\w+?)\s?=\s?(.+?)(?:,|;|\n)/g;
-		const source = file.buffer.toString('utf-8');
-		const externalTagOccurences = [];
-		const importOccurences = [];
-		const assignmentOccurences = [];
-
-		// Find all non-DOM tags
-		let match;
-		while ((match = tagExpression.exec(source)) !== null) {
-			externalTagOccurences.push(match[1]);
-		}
-
-		// Find tags that have an assignment in scope
-		// to filter them from implicit imports
-		// This really should be done via an ast at some point
-		let assignmentMatch;
-		while ((assignmentMatch = assignmentExpression.exec(source)) !== null) {
-			assignmentOccurences.push({
-				match: assignmentMatch[0],
-				tagName: assignmentMatch[1],
-				localName: assignmentMatch[2]
-			});
-		}
-
-		// Find all explicit import statements
-		let importMatch;
-		while ((importMatch = IMPORT.exec(source)) !== null) {
-			importOccurences.push({
-				match: importMatch[0],
-				localName: importMatch[2],
-				tagName: importMatch[1]
-			});
-		}
-
-		// Dedupe matches
-		const externalTagNames = [...new Set(externalTagOccurences)];
-		const imports = uniq(importOccurences, 'localName');
-		const assignments = uniq(assignmentOccurences, 'localName');
-
-		// Extract explicit dependencies
-		const explicitDependencies = imports
-			.map(importStatement => {
-				return importStatement.match;
-			});
-
-		// Process non-DOM tags
-		const implicitDependencies = externalTagNames
-			.map(tagName => {
-				// Infer the localName in pattern.json
-				const localName = tagName === 'Pattern' ? tagName : kebabCase(tagName);
-				const tag = `<${tagName}/>`;
-				const importStatement = `import ${tagName} from '${localName}';`;
-
-				// Check if all uppercase
-				// e.g. <STRONG>foo</STRONG>
-				const isUglyDOMTag = tagName.toUpperCase() === tagName;
-
-				// Check if there is a match in the explicit imports
-				const hasExplicitImport = typeof find(imports, {localName}) !== 'undefined';
-
-				// Check if there is a match in assignments
-				const hasAssignment = typeof find(assignments, {tagName}) !== 'undefined';
-
-				if (hasExplicitImport === false && hasAssignment === false && !isUglyDOMTag) {
-					// implicit imports are deprecated
-					application.log.warn(
-						[
-							deprecation,
-							`Implicit import "${chalk.bold(localName)}" for ${chalk.bold(tag)}`,
-							`detected in ${chalk.bold([file.pattern.id, file.name].join(':'))}.`,
-							'Implicit imports are deprecated and should be replaced with explicit ones.',
-							'Implicit imports will be removed in version 1.0.',
-							`Place "${chalk.bold(importStatement)}" at the top of ${file.path}.`
-						].join(' ')
-					);
-				} else {
-					// skip
-					return '';
-				}
-
-				// Lookup on the dependency.
-				const dependency = file.dependencies[localName];
-
-				// Implicit imports do support patterns only
-				if (typeof dependency === 'undefined' && hasExplicitImport === false) {
-					const err = new Error(
-						[
-							'Could not resolve dependency ${localName}',
-							'introduced by implicit import for <${tagName}/>',
-							'in ${file.path}. Only pattern imports',
-							'are supported with plain jsx files'
-						].join(' ')
-					);
-					err.fileName = file.path;
-					err.file = file.path;
-				}
-
-				return importStatement;
-			});
-
-		// Search the other way round for implicit dependencies used as class
-		// e.g. ReactClass.someStaticProp
-		const implicitClassDependencies = Object.keys(file.dependencies)
-			.reduce((results, localName) => {
-				const className = pascalCase(localName);
-				const importStatement = `import ${className} from '${localName}';`;
-
-				// if the localName is included already, skip
-				if (
-					implicitDependencies.indexOf(importStatement) > -1 ||
-					explicitDependencies.indexOf(importStatement) > -1
-				) {
-					return results;
-				}
-
-				const hasUsage = source.indexOf(`${className}.`) > -1 ||
-					source.indexOf(`(${className}`) > -1;
-
-				if (hasUsage) {
-					// implicit imports are deprecated
-					application.log.warn(
-						[
-							deprecation,
-							`Implicit import "${chalk.bold(localName)}" for class ${chalk.bold(className)}`,
-							`detected in ${chalk.bold([file.pattern.id, file.name].join(':'))}.`,
-							'Implicit imports are deprecated and should be replaced with explicit ones.',
-							'Implicit imports will be removed in version 1.0.',
-							`Place "${chalk.bold(importStatement)}" at the top of ${file.path}.`
-						].join(' ')
-					);
-					return [...results, importStatement];
-				}
-				return results;
-			}, []);
-
-		return [
-			...implicitClassDependencies,
-			...implicitDependencies,
-			...explicitDependencies
-		];
-	}
-
-	function matchFirstJsxExpressionAndWrapWithReturn(source) {
-		return source.replace(EXPR, (match, jsxExpr) => {
-			return `return (\n${jsxExpr}\n);\n`;
+	(ast.deprecations || [])
+		.forEach(deprecation => {
+			const fn = deprecationMapping[deprecation] ||
+				deprecationMapping.default;
+			fn(deprecation);
 		});
-	}
 
-	function rewriteImportsToGlobalNames(file, source) {
-		return source.replace(IMPORT, (match, before, name, after) => {
-			const dependencyFile = file.dependencies[name];
-			// must be npm
-			if (dependencyFile) {
-				// rewrite to global pattern name
-				const dependencyName = dependencyFile.pattern.id;
-				return `${before}${dependencyName}${after}`;
-			}
+	// Search for implicit dependencies
+	const implicitDependencyRegistry = getImplicitDependencies(ast);
+	const implicitDependencies = Object.values(implicitDependencyRegistry);
 
-			// check if require.resolve finds a match
-			try {
-				require.resolve(name);
-			} catch (err) {
-				err.message = [err.message, `It was not found in ${file.pattern.id}'s pattern.json and could not be resolved from npm`].join(' ');
-				err.file = file.path;
-				err.fileName = file.path;
-				throw err;
-			}
-			// all is well, leave it unchanged
-			return match;
-		});
-	}
-
-	function getSquashedDependencies(file) {
-		return uniq(
-				Object
-					.values(file.dependencies)
-					.reduce((dependencies, dependency) =>
-						[...dependencies, dependency],
-					[]),
-				dependency => dependency.pattern.id
+	// Implicit dependencies are deprecated, warn users about them
+	if (implicitDependencies.length > 0) {
+		deprecateImplicitDependencies(
+			application, file, implicitDependencyRegistry
 		);
+		// Inject them anyway
+		injectImplicitDependencies(component, implicitDependencyRegistry);
 	}
 
-	function getRequiredDependencies(file, configuration, opts) {
-		// search for actual imports
-		const code = file.buffer;
-		const pool = getSquashedDependencies(file);
-		const rawImportNames = [];
-		let match;
+	// Check if dependencies are found in pattern.dependencies,
+	// get array of required dependency names
+	const dependencyNames = getResolvableDependencies(component, file);
 
-		while ((match = REQUIRE.exec(code)) !== null) {
-			rawImportNames.push(match[1]);
-		}
-
-		// get deduped list of required names
-		const importNames = [...new Set(rawImportNames)];
-
-		// return a hashmap of required globalNames => file
-		return importNames
-			.reduce((results, importName) => {
-				// skip the import if it is already in the hashmap
-				if (importName in results) {
-					return results;
-				}
-
-				// find a matching dependency file
-				const dependencyFile = find(pool, fileItem => {
-					return fileItem.pattern.id === importName;
-				});
-
-				// must be npm if we did not find one
-				if (dependencyFile) {
-					// dealing with a local dependency, convert it
-					dependencyFile.buffer = convertCode(dependencyFile, configuration, opts);
-					// add it to the hashmap, search for more required dependencies recursively
-					return {
-						...results,
-						[importName]: dependencyFile.buffer,
-						...getRequiredDependencies(dependencyFile, configuration, opts)
-					};
-				}
-				// check if require.resolve finds a match
-				try {
-					require.resolve(importName);
-				} catch (err) {
-					err.message = [
-						err.message,
-						`It was not found in ${file.pattern.id}'s pattern.json`,
-						'and could not be resolved from npm'
-					].join(' ');
-					err.file = file.path;
-					err.pattern = file.pattern.id;
-					err.fileName = file.path;
-					throw err;
-				}
-				// nothing to do for npm dependencies
-				return results;
-			}, {});
+	if (settings.convertDependencies || settings.resolveDependencies) {
+		// convert squashed dependencies
+		file.dependencies = dependencyNames.reduce((registry, name) => {
+			const dependency = file.dependencies[name];
+			return dependency ? {
+				...registry,
+				[name]: convertCode(application, file.dependencies[name], settings)
+			} :
+			registry;
+		}, {});
 	}
 
-	function createRequireBlock(file, configuration, opts) {
-		const requiredDependencies = getRequiredDependencies(file, configuration, opts);
+	const babelOptions = omit(options, ['globals']);
 
-		const results = Object.entries(requiredDependencies)
-			.map(requiredEntry => {
-				const [name, code] = requiredEntry;
-				const formatted = code
-					.split('\n')
-					.map(line => `${'\t\t\t'}${line}`)
-					.join('\n');
-				return `'${name}': function(module, exports, require){\n${formatted}\n}`;
-			})
-			.join(',\n');
+	// TODO: use transformFromAst when switching to babel 6
+	// TODO: transform should move to babel transform completely
+	const {code} = application.cache.get(transformKey, mtime) ||
+		transform(
+			generate(component.program).code,
+			babelOptions
+		);
 
-		return dependencyTemplate.replace('$$localDependencies$$', results);
-	}
+	application.cache.set(transformKey, mtime, {code});
+
+	file.buffer = code;
+	file.meta.react = merge({}, file.meta.react, {
+		ast: component,
+		dependencyNames
+	});
+	return file;
 }
+
+function getReactTransformFunction(application, config) {
+	return async (file: File, _, configuration) => {
+		const settings = merge({}, config, configuration);
+		return convertCode(application, file, settings);
+	};
+}
+
+export default (application: Application): Transform => {
+	const {configuration: {transforms: {react: config}}} = application;
+	return getReactTransformFunction(application, config);
+};
+
+/* flow-include var module: { change_code?: number }; module = {}; */
+module.change_code = 1; // eslint-disable-line

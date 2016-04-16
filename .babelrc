@@ -1,7 +1,10 @@
 {
   "presets": [
-    "es2015",
-    "stage-0"
+    "es2015-node5",
+    "es2016-node5",
+    "stage-0",
+    "async-to-bluebird",
+    "react"
   ],
   "plugins": [
     "add-module-exports"
