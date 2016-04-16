@@ -102,6 +102,7 @@
     "nyc": "6.1.1",
     "parallelshell": "2.0.0",
     "react": "15.0.1",
+    "react-dom": "15.0.1",
     "unindent": "2.0.0"
   },
   "peerDependencies": {

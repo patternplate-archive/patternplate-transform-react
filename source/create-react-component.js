@@ -1,11 +1,8 @@
 import React from 'react';
 
-import generate from 'babel-generator';
 import {
 	exportDefaultDeclaration,
-	identifier,
-	isExportDefaultDeclaration,
-	stringLiteral
+	isExportDefaultDeclaration
 } from 'babel-types';
 import traverse from 'babel-traverse';
 
@@ -14,12 +11,14 @@ import getComponentTemplate from './get-component-template';
 import getExports from './get-exports';
 import getImports from './get-imports';
 import getLastPlainJSX from './get-last-plain-jsx';
-import importTemplate from './import-template';
 import injectGlobals from './inject-globals';
+import injectReactImport from './inject-react-import';
+import isStatelessCompatible from './is-stateless-compatible';
 import supportsStatelessComponents from './supports-stateless-components';
+import rewriteMemberExpressions from './rewrite-member-expressions';
 
 /**
- * Create a React component definition from ast if needed.
+ * Create a React component definition from ast
  * Wraps a plain jsx template into an appropriate component if needed
  * @param  {Object} ast to wrap
  * @param  {string} name of the component
@@ -35,9 +34,6 @@ export default function createReactComponent(ast, name, globals = {}) {
 	// Check for default export
 	const hasDefaultExport = exports.some(isExportDefaultDeclaration);
 
-	// Check if the React version supports stateless components
-	const stateless = supportsStatelessComponents(React);
-
 	// Inject globals into ast
 	injectGlobals(ast, globals);
 
@@ -47,76 +43,62 @@ export default function createReactComponent(ast, name, globals = {}) {
 		return ast;
 	}
 
+	// Check if the React version supports stateless components
+	const stateless = supportsStatelessComponents(React) &&
+		isStatelessCompatible(ast);
+
 	// Get user-provided imports
-	const {imports, identifiers} = getImports(ast);
-
-	// If we create
-	// - a stateless component
-	// - based on plain jsx
-	// rewrite this.props to props
-	if (stateless) {
-		traverse(ast, {
-			MemberExpression(path) {
-				if (path.matchesPattern('this.props')) {
-					const sliced = generate(path.node).code
-						.split('.')
-						.slice(1)
-						.join('.');
-
-					path.replaceWith(identifier(sliced));
-				}
-			}
-		});
-	}
+	const {imports} = getImports(ast);
 
 	// Stuff we found so far
 	const excludes = [...imports, jsx, ...exports];
 
-	// Get all remaining code
-	const auxiliary = getAuxiliary(ast, excludes);
-
-	// Get a react component ast
-	const component = getComponentTemplate(React)({
-		AUXILIARY: auxiliary.map(path => path.node),
-		JSX: jsx,
-		NAME: identifier(name)
-	});
-
-	// Create a default export for it
-	const defaultExport = exportDefaultDeclaration(component);
-
-	// Remove auxiliary code
-	auxiliary.map(aux => aux.remove());
+	// Get remaining code
+	const auxiliary = getAuxiliary(
+		ast,
+		excludes,
+		stateless
+	);
 
 	// Push the created react component into ast
 	traverse(ast, {
 		Program: {
 			exit(path) {
+				const NAME = path.scope.generateUidIdentifier(name);
+				// Get a react component ast
+				const component = getComponentTemplate({stateless})({
+					AUXILIARY: auxiliary.map(path => path.node),
+					JSX: jsx,
+					NAME
+				});
+
+				// Create a default export for it
+				const defaultExport = exportDefaultDeclaration(NAME);
 				path.pushContainer('body', [
+					component,
 					defaultExport
 				]);
 			}
 		}
 	});
 
-	// Add React to imports if not imported already
-	if (identifiers.includes('react') === false) {
-		traverse(ast, {
-			Program: {
-				exit(path) {
-					path.unshiftContainer('body', [
-						importTemplate({
-							LOCAL: identifier('React'),
-							IMPORTED: stringLiteral('react')
-						})
-					]);
-				}
-			}
-		});
+	// Rewrite member expressions for stateless components
+	// to ease the transition for older projects
+	// - this.props => props
+	// - this.context => context
+	if (stateless) {
+		rewriteMemberExpressions(ast);
 	}
+
+	// Inject react import if it is missing
+	injectReactImport(ast);
 
 	// Remove jsx
 	jsx.remove();
+
+	// Remove auxiliary code
+	auxiliary.map(aux => aux.remove());
+
 	return ast;
 }
 

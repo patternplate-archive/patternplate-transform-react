@@ -1,7 +1,7 @@
 import template from 'babel-template';
 
 export default template(`
-	function NAME (props) {
+	const NAME = (props, context) => {
 		AUXILIARY;
 		return (JSX);
 	}
