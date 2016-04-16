@@ -67,10 +67,7 @@ export default ast => {
 	traverse(ast, {
 		MemberExpression: {
 			enter(path) {
-				// const {scope: {parentBlock}} = path;
 				if (!isReactMemberExpression(path.node)) {
-					// console.log(frame(generate(ast.program).code, path.node.loc.start.line, path.node.loc.start.column));
-					// console.log(path.node.property.name);
 					return;
 				}
 
