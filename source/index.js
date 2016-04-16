@@ -75,7 +75,6 @@ function convertCode(application, file, settings) {
 
 	// Search for implicit dependencies
 	const implicitDependencyRegistry = getImplicitDependencies(ast);
-	console.log(implicitDependencyRegistry);
 	const implicitDependencies = Object.values(implicitDependencyRegistry);
 
 	// Implicit dependencies are deprecated, warn users about them
