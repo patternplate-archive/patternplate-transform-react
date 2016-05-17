@@ -1,3 +1,18 @@
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.2.4...v0.4.0) (2016-05-17)
+
+
+### Bug Fixes
+
+* **detection:** resolve npm dependencies from process.cwd always ([1508540](https://github.com/sinnerschrader/patternplate-transform-react/commit/1508540))
+* **generation:** honor globals in internal cache ([40c425a](https://github.com/sinnerschrader/patternplate-transform-react/commit/40c425a))
+
+### Features
+
+* **generation:** switch to ast based transform ([048f461](https://github.com/sinnerschrader/patternplate-transform-react/commit/048f461))
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.2.3...v0.3.0) (2016-04-16)
 ### Bug Fixes
