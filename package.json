@@ -126,7 +126,6 @@
     "compare-semver": "1.1.0",
     "lodash": "4.3.0",
     "pascal-case": "1.1.2",
-    "try-require": "1.2.1",
     "unindent": "2.0.0"
   }
 }

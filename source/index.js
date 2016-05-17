@@ -15,7 +15,7 @@ import getResolvableDependencies from './get-resolvable-dependencies';
 import injectImplicitDependencies from './inject-implicit-dependencies';
 import parse from './parse';
 
-function convertCode(application, file, settings) {
+async function convertCode(application, file, settings) {
 	const deprecationMapping = {
 		default(item) {
 			const lines = file.source
@@ -88,18 +88,19 @@ function convertCode(application, file, settings) {
 
 	// Check if dependencies are found in pattern.dependencies,
 	// get array of required dependency names
-	const dependencyNames = getResolvableDependencies(component, file);
+	const dependencyNames = await getResolvableDependencies(component, file);
 
 	if (settings.convertDependencies || settings.resolveDependencies) {
 		// convert squashed dependencies
-		file.dependencies = dependencyNames.reduce((registry, name) => {
-			const dependency = file.dependencies[name];
-			return dependency ? {
-				...registry,
-				[name]: convertCode(application, file.dependencies[name], settings)
-			} :
-			registry;
-		}, {});
+		await Promise.all(dependencyNames.map(async name => {
+			const {dependencies} = file;
+			const dependency = dependencies[name];
+			if (typeof dependency === 'undefined') {
+				return Promise.resolve();
+			}
+			dependencies[name] = await convertCode(application, dependency, settings);
+			return dependencies[name];
+		}));
 	}
 
 	const babelOptions = omit(options, ['globals']);
@@ -125,7 +126,7 @@ function convertCode(application, file, settings) {
 function getReactTransformFunction(application, config) {
 	return async (file: File, _, configuration) => {
 		const settings = merge({}, config, configuration);
-		return convertCode(application, file, settings);
+		return await convertCode(application, file, settings);
 	};
 }
 

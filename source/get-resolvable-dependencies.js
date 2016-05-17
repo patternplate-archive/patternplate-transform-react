@@ -1,10 +1,23 @@
 import astDependencies from 'babylon-ast-dependencies';
-import {resolve} from 'try-require';
+import nodeResolve from 'resolve';
 
-export default function getResolvableDependencies(ast, file) {
-	return astDependencies(ast)
+const basedir = process.cwd();
+
+function resolve(path, options = {basedir}) {
+	return new Promise((resolver, reject) => {
+		nodeResolve(path, options, (error, result) => {
+			if (error) {
+				return reject(error);
+			}
+			resolver(result);
+		});
+	});
+}
+
+export default async function getResolvableDependencies(ast, file) {
+	return await Promise.all(astDependencies(ast)
 		.map(dependency => dependency.source)
-		.map(dependencyName => {
+		.map(async dependencyName => {
 			const name = dependencyName === 'pattern' ?
 				'Pattern' :
 				dependencyName;
@@ -20,7 +33,7 @@ export default function getResolvableDependencies(ast, file) {
 				return name;
 			}
 
-			const npmResolvable = resolve(name);
+			const npmResolvable = await resolve(name);
 
 			if (npmResolvable) {
 				file.meta.dependencies.push(name);
@@ -38,7 +51,7 @@ export default function getResolvableDependencies(ast, file) {
 			err.fileName = file.path;
 			err.file = file.path;
 			throw err;
-		});
+		}));
 }
 
 module.change_code = 1; // eslint-disable-line
