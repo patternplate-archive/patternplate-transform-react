@@ -43,8 +43,20 @@ async function convertCode(application, file, settings) {
 	};
 
 	const options = settings.opts || {globals: {}};
-	const parseKey = ['react', 'parse', file.path].join(':');
-	const transformKey = ['react', 'transform', file.path].join(':');
+	const parseKey = [
+		'react',
+		'parse',
+		file.path,
+		JSON.stringify(options.globals)
+	].join(':');
+
+	const transformKey = [
+		'react',
+		'transform',
+		file.path,
+		JSON.stringify(options.globals)
+	].join(':');
+
 	const mtime = file.mtime || file.fs.node.mtime;
 
 	const ast = application.cache.get(parseKey, mtime) ||
