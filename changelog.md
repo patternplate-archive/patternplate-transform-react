@@ -1,3 +1,13 @@
+<a name="0.4.2"></a>
+## [0.4.2](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.1...v0.4.2) (2016-05-23)
+
+
+### Bug Fixes
+
+* **generation:** merge node globals into injection ([0c3852d](https://github.com/sinnerschrader/patternplate-transform-react/commit/0c3852d))
+
+
+
 <a name="0.4.1"></a>
 ## [0.4.1](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.0...v0.4.1) (2016-05-18)
 
