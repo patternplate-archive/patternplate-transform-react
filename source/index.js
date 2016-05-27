@@ -67,11 +67,12 @@ async function convertCode(application, file, settings) {
 	// manifest.name is used as name for wrapped components
 	const manifestName = file.pattern.manifest.name;
 
-	/* if (Object.keys(options.globals).length > 0) {
-		deprecateGlobalConfiguration(application, file, options.globals);
-	} */
+	// if (Object.keys(options.globals).length > 0) {
+	// 	deprecateGlobalConfiguration(application, file, options.globals || {});
+	// }
 
 	// Get the component ast
+	console.log(file.path);
 	const component = createReactComponent(
 		ast,
 		pascalCase(manifestName),

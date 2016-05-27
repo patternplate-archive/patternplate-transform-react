@@ -1,7 +1,11 @@
 import chalk from 'chalk';
-import unindent from 'unindent';
+import {oneLine, stripIndent} from 'common-tags';
+import {highlight} from 'emphasize';
 
 const deprecation = chalk.yellow('[ ⚠  Deprecation ⚠ ]');
+const reference = 'https://facebook.github.io/react/docs/context.html';
+const removal = chalk.yellow(oneLine`Global configuration for transform
+	"react" and will be removed with version "1.0.0".`);
 
 function pretty(data, strip = false) {
 	return JSON
@@ -23,46 +27,43 @@ export default (application, file, globals) => {
 			};
 		}, {});
 
-	/* eslint-disable max-len */
-	const message = [
-		chalk.yellow(`${deprecation} Found "global" configuration for`,
-		`${file.pattern.id}:${file.name}.\n`),
-		`\n`,
-		`  ${chalk.yellow('Global configuration for')}`,
-		` ${chalk.yellow('transform "react" and will be removed with version "1.0.0".')}\n`,
-		`  ${chalk.yellow('Replace the configuration with a <Root /> pattern providing React context.')}\n`,
-		`  See ${chalk.bold('https://facebook.github.io/react/docs/context.html')} for reference.\n`,
-		`  \n`,
-		`  ${chalk.grey('// e.g. patterns/habitats/root/index.jsx')}\n`,
-		`  import React, {PropTypes as types} from 'react';\n`,
-		`  \n`,
-		`  export default class Root extends React.Component {\n`,
-		`    static childContextTypes = {\n`,
-		`      return ${pretty(types, true)}\n`,
-		`    };\n`,
-		`  \n`,
-		`    getChildContext() {\n`,
-		`      return ${pretty(globals)}\n`,
-		`    }\n`,
-		`  }\n`,
-		`  \n`,
-		`  ${chalk.grey('// Usage')}\n`,
-		`  import React, {PropTypes as types} from 'react';\n`,
-		`  \n`,
-		`  export default class Root extends React.Component {\n`,
-		`    static contextTypes = {\n`,
-		`      return ${pretty(types, true)}\n`,
-		`    };\n`,
-		`  \n`,
-		`    render() {\n`,
-		`      console.log(this.context); ${chalk.grey(`// => ${pretty(globals)}`)}\n`,
-		`      return <div />;\n`,
-		`    }\n`,
-		`  }\n`,
-		`  \n`
-	].join('');
+	const message = chalk.yellow(oneLine`${deprecation} Found "global"
+		configuration for ${file.pattern.id}:${file.name}.`);
 
-	application.log.warn(unindent(message));
+	const warning = stripIndent`
+	${message} ${removal}
+	Replace the configuration with a <Root /> pattern providing React context.
+	See ${chalk.bold(reference)} for reference.
+
+	  ${highlight('js', `// Example definition
+	  import React, {PropTypes as types} from 'react';
+
+	  export default class Root extends React.Component {
+	    static childContextTypes = {
+	      return ${pretty(types, true)}
+	    };
+
+	    getChildContext() {
+	      return ${pretty(globals)}
+	    }
+	  }
+
+	  // Example usage
+	  import React, {PropTypes as types} from 'react';
+
+	  export default class Root extends React.Component {
+	    static contextTypes = {
+	      return ${pretty(types, true)}
+	    };
+
+	    render() {
+	      console.log(this.context); // => ${pretty(globals)}
+	      return <div />;
+	    }
+	  `).value}}
+	`;
+
+	application.log.warn(warning);
 };
 
 module.change_code = 1; // eslint-disable-line

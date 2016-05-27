@@ -29,6 +29,8 @@ export default async function getResolvableDependencies(ast, file) {
 			const resolveable = name in file.dependencies ||
 				name in indexDependencies;
 
+			const {meta} = file;
+
 			if (resolveable) {
 				return name;
 			}
@@ -36,7 +38,8 @@ export default async function getResolvableDependencies(ast, file) {
 			const npmResolvable = await resolve(name);
 
 			if (npmResolvable) {
-				file.meta.dependencies.push(name);
+				const dependencies = [...meta.dependencies, name];
+				meta.dependencies = [...new Set(dependencies)];
 				return name;
 			}
 

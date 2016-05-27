@@ -2,8 +2,16 @@ import 'babel-register';
 import 'babel-polyfill';
 import test from 'ava';
 
+import {uniqBy} from 'lodash';
+
 import factory from '../source';
-import {virtualModule, virtualRender} from './_helpers';
+
+import {
+	runTimes,
+	virtualModule,
+	virtualRender
+} from './_helpers';
+
 import * as mocks from './_mocks';
 
 test.beforeEach(t => {
@@ -90,14 +98,11 @@ test('when transforming a react class declaration', async t => {
 	}
 });
 
-/* This fails with an uncaught exception, which basically is what we want here
-TODO: wrap your head around why this happens
-
-test('when transforming invalid plain jsx', async t => {
+test('when transforming invalid plain jsx', t => {
 	const {context: {transform}} = t;
 	const execution = transform(mocks.plainAsiFile);
-	await t.throws(execution, 'it should fail');
-}); */
+	t.throws(execution, Error, 'it should fail');
+});
 
 test(
 	'when transforming plain jsx with variable declaration "props"',
@@ -190,5 +195,46 @@ test(
 		const {context: {transform}} = t;
 		const execution = transform(mocks.classDeclarator);
 		t.notThrows(execution, 'it should not fail');
+	}
+);
+
+test(
+	'when transforming plain jsx with implicit dependencies',
+	async t => {
+		const {context: {transform}} = t;
+		const execution = transform(mocks.implicitDependencies);
+
+		t.notThrows(execution, 'it should not fail');
+
+		{
+			const expected = ['react'];
+			const {meta: {dependencies: actual}} = await execution;
+			t.deepEqual(
+				actual,
+				expected,
+				'it should list the expected external dependencies'
+			);
+		}
+	}
+);
+
+test(
+	'when transforming plain jsx with implicit missing dependencies',
+	async t => {
+		const {context: {transform}} = t;
+		const execution = transform(mocks.missingDependencies);
+		t.throws(execution, Error, 'it should fail');
+	}
+);
+
+test(
+	'when running the transform multiple times on the same file',
+	async t => {
+		const {context: {transform}} = t;
+
+		const results = await runTimes(transform, 10, mocks.implicitDependencies);
+		const actual = uniqBy(results, 'buffer').length;
+		const expected = 1;
+		t.is(actual, expected, 'the buffer should not change');
 	}
 );

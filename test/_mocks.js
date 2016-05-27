@@ -1,6 +1,7 @@
 import unindent from 'unindent';
 
 const file = {
+	path: 'mocks/index.jsx',
 	fs: {
 		node: {
 			mtime: 0
@@ -43,6 +44,10 @@ export const application = {
 		},
 		set() {
 			return null;
+		}
+	},
+	log: {
+		warn() {
 		}
 	}
 };
@@ -187,4 +192,34 @@ export const plainThis = {
 	</div>
 	`)),
 	dependencies: {}
+};
+
+export const dependency = {
+	...file,
+	buffer: new Buffer(unindent(`
+	<div className="dependency"/>
+	`)),
+	dependencies: {}
+};
+
+export const implicitDependencies = {
+	...file,
+	buffer: new Buffer(unindent(`
+	<div>
+		<Dependency />
+	</div>
+	`)),
+	dependencies: {
+		dependency
+	}
+};
+
+export const missingDependencies = {
+	...file,
+	buffer: new Buffer(unindent(`
+	<MissingDependency />
+	`)),
+	dependencies: {
+		dependency
+	}
 };

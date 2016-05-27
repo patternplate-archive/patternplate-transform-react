@@ -47,6 +47,8 @@ export default function createReactComponent(ast, name, globals = {}) {
 	const stateless = supportsStatelessComponents(React) &&
 		isStatelessCompatible(ast);
 
+	console.log(stateless);
+
 	// Get user-provided imports
 	const {imports} = getImports(ast);
 

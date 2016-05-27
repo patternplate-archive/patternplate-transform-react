@@ -1,6 +1,8 @@
 import traverse from 'babel-traverse';
 import {react as reactType} from 'babel-types';
-import {kebabCase} from 'lodash';
+import {difference, kebabCase, uniq} from 'lodash';
+import pascalCase from 'pascal-case';
+import getImports from './get-imports';
 import normalizeTagName from './normalize-tag-name';
 
 /**
@@ -10,7 +12,7 @@ import normalizeTagName from './normalize-tag-name';
  * @deprecate
  */
 export default function getImplicitDependencies(ast) {
-	const dependencies = [];
+	const unboundIdentifiers = [];
 
 	traverse(ast, {
 		ReferencedIdentifier(path) {
@@ -19,8 +21,9 @@ export default function getImplicitDependencies(ast) {
 			if (!binding) {
 				if (path.isJSXIdentifier()) {
 					const normalizedName = normalizeTagName(path.node.name);
+
 					if (!reactType.isCompatTag(normalizedName)) {
-						dependencies.push(path);
+						unboundIdentifiers.push(normalizedName);
 						return;
 					}
 				}
@@ -28,12 +31,21 @@ export default function getImplicitDependencies(ast) {
 		}
 	});
 
-	return dependencies.reduce((registry, path) => {
-		return {
-			...registry,
-			[path.node.name]: kebabCase(path.node.name)
-		};
-	}, {});
+	const explicitDependencies = getImports(ast).identifiers
+		.map(({value}) => pascalCase(value));
+
+	const implicitDependencies = uniq(difference(
+			unboundIdentifiers,
+			explicitDependencies
+		));
+
+	return implicitDependencies
+		.reduce((registry, implicitDependencyName) => {
+			return {
+				...registry,
+				[implicitDependencyName]: kebabCase(implicitDependencyName)
+			};
+		}, {});
 }
 
 module.change_code = 1; // eslint-disable-line

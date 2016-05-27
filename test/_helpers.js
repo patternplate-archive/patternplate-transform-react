@@ -1,5 +1,6 @@
 import vm from 'vm';
 import {merge} from 'lodash';
+import Promise from 'bluebird';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 
@@ -23,3 +24,10 @@ export const virtualRender = (code, options, props, children) => {
 	const Component = virtualModule(code, options);
 	return render(Component, props, children);
 };
+
+export const runTimes = async (fn, times = 1, initial) => {
+	return Promise.reduce(Array(times).fill(), async registry => {
+		const previous = registry[registry.length - 1];
+		return [...registry, await fn(previous || initial)];
+	}, []);
+}
