@@ -26,7 +26,7 @@ function isRenderBound() {
  * @param  {Array<Node>} ast nodes to exclude from search
  * @return {Array<Node>} ast nodes to emebd into render
  */
-export default function getAuxiliary(ast, exclude) {
+export default (ast, exclude) => {
 	const auxiliary = [];
 
 	traverse(ast, {
@@ -46,6 +46,6 @@ export default function getAuxiliary(ast, exclude) {
 	});
 
 	return auxiliary;
-}
+};
 
 module.change_code = 1; // eslint-disable-line

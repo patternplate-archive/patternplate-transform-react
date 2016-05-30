@@ -5,7 +5,7 @@ import traverse from 'babel-traverse';
  * @param  {Object} ast to search in
  * @return {Array}      ast nodes of export declarations
  */
-export default function getExports(ast) {
+export default ast => {
 	const imports = [];
 
 	traverse(ast, {
@@ -14,6 +14,6 @@ export default function getExports(ast) {
 		}
 	});
 	return imports;
-}
+};
 
 module.change_code = 1; // eslint-disable-line

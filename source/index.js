@@ -2,9 +2,9 @@
 import {Application, File, Transform} from './types';
 
 import chalk from 'chalk';
-import generate from 'babel-generator';
 import {transform} from 'babel-core';
-import {merge, omit} from 'lodash';
+import generate from 'babel-generator';
+import {merge, omit, values} from 'lodash';
 import pascalCase from 'pascal-case';
 
 import createReactComponent from './create-react-component';
@@ -14,6 +14,15 @@ import getImplicitDependencies from './get-implicit-dependencies';
 import getResolvableDependencies from './get-resolvable-dependencies';
 import injectImplicitDependencies from './inject-implicit-dependencies';
 import parse from './parse';
+
+// TODO: enable this when switching to babel 6
+/* const babelDefaults = {
+	presets: []
+};
+
+const requiredBabelPresets = ['react', 'es2015']; */
+
+const babelDefaults = {};
 
 async function convertCode(application, file, settings) {
 	const deprecationMapping = {
@@ -72,7 +81,6 @@ async function convertCode(application, file, settings) {
 	// }
 
 	// Get the component ast
-	console.log(file.path);
 	const component = createReactComponent(
 		ast,
 		pascalCase(manifestName),
@@ -88,7 +96,7 @@ async function convertCode(application, file, settings) {
 
 	// Search for implicit dependencies
 	const implicitDependencyRegistry = getImplicitDependencies(ast);
-	const implicitDependencies = Object.values(implicitDependencyRegistry);
+	const implicitDependencies = values(implicitDependencyRegistry);
 
 	// Implicit dependencies are deprecated, warn users about them
 	if (implicitDependencies.length > 0) {
@@ -116,9 +124,17 @@ async function convertCode(application, file, settings) {
 		}));
 	}
 
-	const babelOptions = omit(options, ['globals']);
+	const babelOptions = merge({}, omit(options, ['globals']), babelDefaults);
 
-	// TODO: use transformFromAst when switching to babel 6
+	// TODO: enable this when switching to babel 6
+	// some babel-presets are required
+	/* requiredBabelPresets.forEach(requiredBabelPreset => {
+		if (babelOptions.presets.includes(requiredBabelPreset) === false) {
+			babelOptions.presets.push(requiredBabelPreset);
+		}
+	}); */
+
+	// TODO: switch to babel6, use transformFromAst
 	// TODO: transform should move to babel transform completely
 	const {code} = application.cache.get(transformKey, mtime) ||
 		transform(

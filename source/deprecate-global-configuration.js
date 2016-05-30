@@ -10,7 +10,7 @@ const removal = chalk.yellow(oneLine`Global configuration for transform
 function pretty(data, strip = false) {
 	return JSON
 		.stringify(data, null, '')
-		.replace(/\"/g, strip ? '' : '\'');
+		.replace(/"/g, strip ? '' : '\'');
 }
 
 /**

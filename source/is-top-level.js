@@ -6,7 +6,7 @@ const jsxTypes = ['JSXElement', 'JSXAttribute', 'JSXExpression'];
  * @param  {Object}  node babylon ast node to check the scope for
  * @return {Boolean}      if node is in the outermost scope
  */
-export default function isTopLevel(path) {
+export default path => {
 	const scope = path.scope || {};
 	const parentBlock = scope.parentBlock || {};
 	const scopType = parentBlock.type || '';
@@ -16,6 +16,6 @@ export default function isTopLevel(path) {
 
 	return outerMostScopeTypes.includes(scopType) &&
 		jsxTypes.indexOf(parentType) === -1;
-}
+};
 
 module.change_code = 1; // eslint-disable-line

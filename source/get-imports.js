@@ -12,7 +12,7 @@ import traverse from 'babel-traverse';
  * @param  {Object}   ast to search in
  * @return {Imports}  The import paths and their names
  */
-export default function getImports(ast) {
+export default ast => {
 	const imports = [];
 	const identifiers = [];
 
@@ -34,6 +34,6 @@ export default function getImports(ast) {
 	});
 
 	return {imports, identifiers};
-}
+};
 
 module.change_code = 1; // eslint-disable-line

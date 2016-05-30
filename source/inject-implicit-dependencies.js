@@ -8,7 +8,7 @@ import importTemplate from './import-template';
  * @param  {Object} dependencies importedName localName map
  * @return {Object}              babel ast with injected imports
  */
-export default function injectImplicitDependencies(ast, dependencies) {
+export default (ast, dependencies) => {
 	const imports = Object.entries(dependencies)
 		.map(item => {
 			const [localName, importedName] = item;
@@ -31,6 +31,6 @@ export default function injectImplicitDependencies(ast, dependencies) {
 	});
 
 	return ast;
-}
+};
 
 module.change_code = 1; // eslint-disable-line

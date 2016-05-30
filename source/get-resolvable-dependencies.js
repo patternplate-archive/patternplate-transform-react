@@ -14,7 +14,7 @@ function resolve(path, options = {basedir}) {
 	});
 }
 
-export default async function getResolvableDependencies(ast, file) {
+export default async (ast, file) => {
 	return await Promise.all(astDependencies(ast)
 		.map(dependency => dependency.source)
 		.map(async dependencyName => {
@@ -55,6 +55,6 @@ export default async function getResolvableDependencies(ast, file) {
 			err.file = file.path;
 			throw err;
 		}));
-}
+};
 
 module.change_code = 1; // eslint-disable-line

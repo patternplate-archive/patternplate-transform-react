@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import {oneLine, stripIndents} from 'common-tags';
 import {highlight} from 'emphasize';
+import {values} from 'lodash';
 
 const deprecation = chalk.yellow('[ ⚠  Deprecation ⚠ ]');
 
@@ -9,7 +10,7 @@ const deprecation = chalk.yellow('[ ⚠  Deprecation ⚠ ]');
  * @param  {Object} application to log on
  */
 export default (application, file, registry) => {
-	const names = Object.values(registry);
+	const names = values(registry);
 
 	const subject = oneLine`
 		Found ${names.length} implicit imports in ${file.pattern.id}:${file.name}.
@@ -36,7 +37,7 @@ export default (application, file, registry) => {
 		${highlight('js', imports).value}
 	`;
 
-	// application.log.warn(`${warning}\n`);
+	application.log.warn(`${warning}\n`);
 };
 
 module.change_code = 1; // eslint-disable-line

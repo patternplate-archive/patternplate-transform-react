@@ -6,7 +6,7 @@ import isTopLevel from './is-top-level';
  * @param  {Object} ast to search in
  * @return {Array}      of JSX expressions in the outermost scope
  */
-export default function getPlainJSX(ast) {
+export default ast => {
 	const plain = [];
 
 	traverse(ast, {
@@ -20,6 +20,6 @@ export default function getPlainJSX(ast) {
 	});
 
 	return plain;
-}
+};
 
 module.change_code = 1; // eslint-disable-line

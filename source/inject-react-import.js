@@ -8,7 +8,7 @@ import {
 import importTemplate from './import-template';
 import getImports from './get-imports';
 
-export default function injectReactImport(ast) {
+export default ast => {
 	const {identifiers} = getImports(ast);
 
 	// Add React to imports if not imported already
@@ -26,6 +26,6 @@ export default function injectReactImport(ast) {
 			}
 		});
 	}
-}
+};
 
 module.change_code = 1; // eslint-disable-line

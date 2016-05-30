@@ -24,7 +24,7 @@ import rewriteMemberExpressions from './rewrite-member-expressions';
  * @param  {string} name of the component
  * @return {Object} ast containing the wrapped component
  */
-export default function createReactComponent(ast, name, globals = {}) {
+export default (ast, name, globals = {}) => {
 	// Get the last JSX expression in the outermost scope
 	const jsx = getLastPlainJSX(ast);
 
@@ -46,8 +46,6 @@ export default function createReactComponent(ast, name, globals = {}) {
 	// Check if the React version supports stateless components
 	const stateless = supportsStatelessComponents(React) &&
 		isStatelessCompatible(ast);
-
-	console.log(stateless);
 
 	// Get user-provided imports
 	const {imports} = getImports(ast);
@@ -102,6 +100,6 @@ export default function createReactComponent(ast, name, globals = {}) {
 	auxiliary.map(aux => aux.remove());
 
 	return ast;
-}
+};
 
 module.change_code = 1; // eslint-disable-line

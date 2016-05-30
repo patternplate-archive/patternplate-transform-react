@@ -11,7 +11,7 @@ import normalizeTagName from './normalize-tag-name';
  * @return {Array<String>} local names to import implicitly
  * @deprecate
  */
-export default function getImplicitDependencies(ast) {
+export default ast => {
 	const unboundIdentifiers = [];
 
 	traverse(ast, {
@@ -46,6 +46,6 @@ export default function getImplicitDependencies(ast) {
 				[implicitDependencyName]: kebabCase(implicitDependencyName)
 			};
 		}, {});
-}
+};
 
 module.change_code = 1; // eslint-disable-line

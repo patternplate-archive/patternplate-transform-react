@@ -5,11 +5,11 @@ import getPlainJSX from './get-plain-jsx';
  * @param {Object}        ast to search in
  * @return {Object|null}  Expression node or null
  */
-export default function getLastPlainJSX(ast) {
+export default ast => {
 	const plainJSX = getPlainJSX(ast);
 	return plainJSX.length > 0 ?
 		plainJSX[plainJSX.length - 1] :
 		null;
-}
+};
 
 module.change_code = 1; // eslint-disable-line

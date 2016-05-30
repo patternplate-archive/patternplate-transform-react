@@ -4,10 +4,10 @@ import traverse from 'babel-traverse';
 import {
 	isScopable,
 	isProgram,
+	isMemberExpression,
+	isThisExpression,
 	identifier
 } from 'babel-types';
-
-import isReactMemberExpression from './is-react-member-expression';
 
 /**
  * Get the top level scope for a given path
@@ -34,6 +34,27 @@ function hasRenderParent(path) {
 	}
 
 	return false;
+}
+
+/**
+ * Check if a node is a react-specific member expression
+ * @param  {Object}  node
+ * @return {Boolean}
+ */
+function isReactMemberExpression(node) {
+	if (
+			node.object &&
+			!isThisExpression(node.object) &&
+			!isMemberExpression(node.object)
+		) {
+		return false;
+	}
+
+	if (isMemberExpression(node.object)) {
+		return isReactMemberExpression(node.object);
+	}
+
+	return ['props', 'context'].includes(node.property.name);
 }
 
 /**

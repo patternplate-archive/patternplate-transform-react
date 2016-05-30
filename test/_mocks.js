@@ -19,20 +19,20 @@ const file = {
 	}
 };
 
-export const OldReact = {
+const OldReact = {
 	version: '0.13.3'
 };
 
-export const React = {
+const React = {
 	version: '0.14.0'
 };
 
-export const config = {
+const config = {
 	opts: {
 	}
 };
 
-export const application = {
+const application = {
 	configuration: {
 		transforms: {
 			react: config
@@ -52,20 +52,20 @@ export const application = {
 	}
 };
 
-export const emptyFile = {
+const emptyFile = {
 	...file,
 	buffer: new Buffer(''),
 	path: 'empty/index.jsx',
 	dependencies: {}
 };
 
-export const plainFile = {
+const plainFile = {
 	...file,
 	buffer: new Buffer('<div />'),
 	dependencies: {}
 };
 
-export const plainAsiFile = {
+const plainAsiFile = {
 	...file,
 	buffer: new Buffer(unindent(`
 	console.log()
@@ -75,7 +75,7 @@ export const plainAsiFile = {
 	dependencies: {}
 };
 
-export const statelessFile = {
+const statelessFile = {
 	...file,
 	buffer: new Buffer(unindent(`
 	import React from 'react';
@@ -88,7 +88,7 @@ export const statelessFile = {
 	dependencies: {}
 };
 
-export const fullFile = {
+const fullFile = {
 	...file,
 	buffer: new Buffer(unindent(`
 	import React from 'react';
@@ -103,7 +103,7 @@ export const fullFile = {
 	dependencies: {}
 };
 
-export const reservedPropsDeclaration = {
+const reservedPropsDeclaration = {
 	...file,
 	buffer: new Buffer(unindent(`
 	const props = {
@@ -117,7 +117,7 @@ export const reservedPropsDeclaration = {
 	dependencies: {}
 };
 
-export const reservedContextDeclaration = {
+const reservedContextDeclaration = {
 	...file,
 	buffer: new Buffer(unindent(`
 	const context = {
@@ -131,7 +131,7 @@ export const reservedContextDeclaration = {
 	dependencies: {}
 };
 
-export const variableDeclarator = {
+const variableDeclarator = {
 	...file,
 	buffer: new Buffer(unindent(`
 	const Test = {};
@@ -141,7 +141,7 @@ export const variableDeclarator = {
 	dependencies: {}
 };
 
-export const functionDeclarator = {
+const functionDeclarator = {
 	...file,
 	buffer: new Buffer(unindent(`
 	// function Test(props) { console.log(props); };
@@ -153,7 +153,7 @@ export const functionDeclarator = {
 	dependencies: {}
 };
 
-export const classDeclarator = {
+const classDeclarator = {
 	...file,
 	buffer: new Buffer(unindent(`
 	class Test {
@@ -171,7 +171,7 @@ export const classDeclarator = {
 	dependencies: {}
 };
 
-export const plainThis = {
+const plainThis = {
 	...file,
 	buffer: new Buffer(unindent(`
 	const foo = this.props.foo;
@@ -194,7 +194,7 @@ export const plainThis = {
 	dependencies: {}
 };
 
-export const dependency = {
+const dependency = {
 	...file,
 	buffer: new Buffer(unindent(`
 	<div className="dependency"/>
@@ -202,7 +202,7 @@ export const dependency = {
 	dependencies: {}
 };
 
-export const implicitDependencies = {
+const implicitDependencies = {
 	...file,
 	buffer: new Buffer(unindent(`
 	<div>
@@ -214,7 +214,7 @@ export const implicitDependencies = {
 	}
 };
 
-export const missingDependencies = {
+const missingDependencies = {
 	...file,
 	buffer: new Buffer(unindent(`
 	<MissingDependency />
@@ -222,4 +222,25 @@ export const missingDependencies = {
 	dependencies: {
 		dependency
 	}
+};
+
+export {
+	OldReact,
+	React,
+	config,
+	application,
+	emptyFile,
+	plainFile,
+	plainAsiFile,
+	statelessFile,
+	fullFile,
+	reservedPropsDeclaration,
+	reservedContextDeclaration,
+	variableDeclarator,
+	functionDeclarator,
+	classDeclarator,
+	plainThis,
+	dependency,
+	implicitDependencies,
+	missingDependencies
 };
