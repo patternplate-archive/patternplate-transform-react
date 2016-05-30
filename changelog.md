@@ -1,3 +1,13 @@
+<a name="0.4.3"></a>
+## [0.4.3](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.2...v0.4.3) (2016-05-30)
+
+
+### Bug Fixes
+
+* **generation:** filter implicit imports with explicit ones ([75b7a74](https://github.com/sinnerschrader/patternplate-transform-react/commit/75b7a74))
+
+
+
 <a name="0.4.2"></a>
 ## [0.4.2](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.1...v0.4.2) (2016-05-23)
 
