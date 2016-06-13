@@ -102,11 +102,15 @@
     "eslint-plugin-babel": "3.2.0",
     "flow-bin": "0.26.0",
     "husky": "0.11.4",
+    "jsdom": "9.2.1",
     "jsonlint-cli": "1.0.1",
     "nyc": "6.4.4",
     "parallelshell": "2.0.0",
     "react": "15.1.0",
+    "react-addons-test-utils": "15.1.0",
     "react-dom": "15.1.0",
+    "unexpected": "10.13.3",
+    "unexpected-react": "3.2.3",
     "unindent": "2.0.0"
   },
   "peerDependencies": {

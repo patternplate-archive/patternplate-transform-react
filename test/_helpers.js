@@ -32,9 +32,16 @@ const runTimes = async (fn, times = 1, initial) => {
 	}, []);
 };
 
+class StatelessWrapper extends React.Component {
+	render() {
+		return this.props.children;
+	}
+}
+
 export {
 	render,
 	virtualModule,
 	virtualRender,
-	runTimes
+	runTimes,
+	StatelessWrapper
 };

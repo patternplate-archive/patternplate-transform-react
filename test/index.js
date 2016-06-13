@@ -1,18 +1,26 @@
 import 'babel-register';
 import 'babel-polyfill';
-import test from 'ava';
 
+import test from 'ava';
+import unexpected from 'unexpected';
+import unexpectedReact from 'unexpected-react';
 import {uniqBy} from 'lodash';
+import * as ReactTestUtils from 'react-addons-test-utils';
+import * as React from 'react'; // eslint-disable-line
 
 import factory from '../source';
 
 import {
 	runTimes,
 	virtualModule,
-	virtualRender
+	StatelessWrapper // eslint-disable-line no-unused-vars
 } from './_helpers';
 
 import * as mocks from './_mocks';
+import './_env';
+
+const expect = unexpected.clone()
+	.use(unexpectedReact);
 
 test.beforeEach(t => {
 	t.context.transform = factory(mocks.application);
@@ -60,9 +68,12 @@ test('when transforming plain jsx', async t => {
 	}
 
 	{
-		const actual = virtualRender(result.buffer);
-		const expected = '<div></div>';
-		t.is(actual, expected, 'it should yield the expected render output');
+		const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
+		const actual = ReactTestUtils.renderIntoDocument(
+			<StatelessWrapper><Component/></StatelessWrapper>
+		);
+		const expected = <div></div>;
+		expect(actual, 'to have rendered', expected);
 	}
 });
 
@@ -76,9 +87,21 @@ test('when transforming a react stateless component', async t => {
 	}
 
 	{
-		const actual = virtualRender(result.buffer);
-		const expected = '<div></div>';
-		t.is(actual, expected, 'it should yield the same render output');
+		const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
+		const actual = ReactTestUtils.renderIntoDocument(
+			<StatelessWrapper><Component/></StatelessWrapper>
+		);
+		const expected = <div></div>;
+		expect(actual, 'to have rendered', expected);
+	}
+
+	{
+		const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
+		const actual = ReactTestUtils.renderIntoDocument(
+			<StatelessWrapper><Component/></StatelessWrapper>
+		);
+		const expected = <div></div>;
+		expect(actual, 'to have rendered', expected);
 	}
 });
 
@@ -92,9 +115,10 @@ test('when transforming a react class declaration', async t => {
 	}
 
 	{
-		const actual = virtualRender(result.buffer);
-		const expected = '<div></div>';
-		t.is(actual, expected, 'it should yield the same render output');
+		const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
+		const actual = ReactTestUtils.renderIntoDocument(<Component />);
+		const expected = <div></div>;
+		expect(actual, 'to have rendered', expected);
 	}
 });
 
@@ -116,10 +140,11 @@ test(
 		}
 
 		{
+			const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
 			const props = {id: 'foo', className: 'baz'};
-			const actual = virtualRender(result.buffer, {}, props);
-			const expected = '<div id="foo" class="bar">foo</div>';
-			t.is(actual, expected, 'it should yield expected render output');
+			const actual = ReactTestUtils.renderIntoDocument(<Component {...props}/>);
+			const expected = <div id="foo" className="bar">foo</div>;
+			expect(actual, 'to have rendered', expected);
 		}
 	}
 );
@@ -136,10 +161,11 @@ test(
 		}
 
 		{
+			const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
 			const props = {id: 'foo', className: 'baz'};
-			const actual = virtualRender(result.buffer, {}, props);
-			const expected = '<div id="foo" class="bar">foo</div>';
-			t.is(actual, expected, 'it should yield expected render output');
+			const actual = ReactTestUtils.renderIntoDocument(<Component {...props}/>);
+			const expected = <div id="foo" className="bar">foo</div>;
+			expect(actual, 'to have rendered', expected);
 		}
 	}
 );
@@ -151,13 +177,18 @@ test(
 		const result = await transform(mocks.plainThis);
 
 		{
+			const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
 			const props = {
 				foo: {id: 'bar', children: 'bar'},
 				id: 'foo', children: 'foo'
 			};
-			const actual = virtualRender(result.buffer, {}, props, 'foo');
-			const expected = '<div id="foo">foo<div id="bar">bar</div></div>';
-			t.is(actual, expected, 'it should yield expected render output');
+			const actual = ReactTestUtils.renderIntoDocument(
+				<StatelessWrapper>
+					<Component {...props}>foo</Component>
+				</StatelessWrapper>
+			);
+			const expected = <div id="foo">foo<div id="bar">bar</div></div>;
+			expect(actual, 'to have rendered', expected);
 		}
 	}
 );
