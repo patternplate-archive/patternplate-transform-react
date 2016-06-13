@@ -31,6 +31,18 @@
     "version": "npm run changelog && git add . && echo \"$(conventional-changelog -p angular)\" > .git/COMMITMSG.tmp",
     "postversion": "git tag -d v$npm_package_version && git commit --amend -m \"chore(release): $npm_package_version\n$(conventional-changelog -p angular)\" && git tag -a v$npm_package_version -m \"$(conventional-changelog -p angular)\""
   },
+  "babel": {
+    "presets": [
+      "es2015-node4",
+      "es2016-node4",
+      "stage-0",
+      "async-to-bluebird",
+      "react"
+    ],
+    "plugins": [
+      "add-module-exports"
+    ]
+  },
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog-lint"
@@ -85,8 +97,8 @@
     "babel-eslint": "6.0.4",
     "babel-plugin-add-module-exports": "0.2.1",
     "babel-preset-async-to-bluebird": "1.1.0",
-    "babel-preset-es2015-node5": "1.2.0",
-    "babel-preset-es2016-node5": "1.1.2",
+    "babel-preset-es2015-node4": "2.1.0",
+    "babel-preset-es2016-node4": "6.0.1",
     "babel-preset-react": "6.5.0",
     "babel-preset-stage-0": "6.5.0",
     "babel-register": "6.9.0",
