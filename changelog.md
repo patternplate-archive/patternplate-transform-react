@@ -1,3 +1,13 @@
+<a name="0.4.4"></a>
+## [0.4.4](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.3...v0.4.4) (2016-06-23)
+
+
+### Bug Fixes
+
+* **system:** use es*-node4 babel presets ([7cbf6bb](https://github.com/sinnerschrader/patternplate-transform-react/commit/7cbf6bb))
+
+
+
 <a name="0.4.3"></a>
 ## [0.4.3](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.2...v0.4.3) (2016-05-30)
 
