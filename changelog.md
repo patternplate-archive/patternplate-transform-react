@@ -1,3 +1,13 @@
+<a name="0.4.5"></a>
+## [0.4.5](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.4...v0.4.5) (2016-06-24)
+
+
+### Bug Fixes
+
+* **system:** pin babylon on 6.7.0, avoid jsx woes ([a6b9d15](https://github.com/sinnerschrader/patternplate-transform-react/commit/a6b9d15))
+
+
+
 <a name="0.4.4"></a>
 ## [0.4.4](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.3...v0.4.4) (2016-06-23)
 
