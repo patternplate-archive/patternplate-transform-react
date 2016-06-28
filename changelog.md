@@ -1,3 +1,13 @@
+<a name="0.4.7"></a>
+## [0.4.7](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.6...v0.4.7) (2016-06-28)
+
+
+### Bug Fixes
+
+* **system:** pin babel-core as .dependency ([a54108c](https://github.com/sinnerschrader/patternplate-transform-react/commit/a54108c))
+
+
+
 <a name="0.4.6"></a>
 ## [0.4.6](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.5...v0.4.6) (2016-06-24)
 
