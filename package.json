@@ -126,11 +126,11 @@
     "unindent": "2.0.0"
   },
   "peerDependencies": {
-    "babel-core": "^5",
     "react": ">= 0.13"
   },
   "dependencies": {
     "babel-code-frame": "6.8.0",
+    "babel-core": "5.8.38",
     "babel-generator": "6.7.0",
     "babel-polyfill": "6.9.1",
     "babel-template": "6.7.0",
