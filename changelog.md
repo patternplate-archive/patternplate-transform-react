@@ -1,3 +1,13 @@
+<a name="0.4.10"></a>
+## [0.4.10](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.9...v0.4.10) (2016-07-01)
+
+
+### Bug Fixes
+
+* **generation:** dedupe deep imports ([6d178d4](https://github.com/sinnerschrader/patternplate-transform-react/commit/6d178d4))
+
+
+
 <a name="0.4.9"></a>
 ## [0.4.9](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.8...v0.4.9) (2016-07-01)
 
