@@ -38,7 +38,7 @@ export default async (ast, file) => {
 			const npmResolvable = await resolve(name);
 
 			if (npmResolvable) {
-				const dependencies = [...meta.dependencies, name];
+				const dependencies = [...meta.dependencies, name.split('/')[0]];
 				meta.dependencies = [...new Set(dependencies)];
 				return name;
 			}

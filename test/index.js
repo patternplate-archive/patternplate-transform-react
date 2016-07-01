@@ -240,11 +240,7 @@ test(
 		{
 			const expected = ['react'];
 			const {meta: {dependencies: actual}} = await execution;
-			t.deepEqual(
-				actual,
-				expected,
-				'it should list the expected external dependencies'
-			);
+			expect(actual, 'to equal', expected);
 		}
 	}
 );
@@ -267,5 +263,20 @@ test(
 		const actual = uniqBy(results, 'buffer').length;
 		const expected = 1;
 		t.is(actual, expected, 'the buffer should not change');
+	}
+);
+
+test(
+	'when transforming a file with explicit dependencies',
+	async t => {
+		const {context: {transform}} = t;
+		const execution = transform(mocks.explicitDependencies);
+
+		const expected = ['react', 'lodash'];
+		const unwanted = 'lodash/fp';
+		const {meta: {dependencies: actual}} = await execution;
+
+		expect(actual, 'to contain', ...expected);
+		expect(actual, 'not to contain', unwanted);
 	}
 );

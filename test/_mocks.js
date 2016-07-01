@@ -1,4 +1,5 @@
 import unindent from 'unindent';
+import {merge} from 'lodash/fp';
 
 const file = {
 	path: 'mocks/index.jsx',
@@ -12,12 +13,15 @@ const file = {
 			name: 'test'
 		}
 	},
+	dependencies: {},
 	meta: {
 		dependencies: [],
 		react: {
 		}
 	}
 };
+
+const getFile = merge(file);
 
 const OldReact = {
 	version: '0.13.3'
@@ -52,30 +56,24 @@ const application = {
 	}
 };
 
-const emptyFile = {
-	...file,
+const emptyFile = getFile({
 	buffer: new Buffer(''),
-	path: 'empty/index.jsx',
-	dependencies: {}
-};
+	path: 'empty/index.jsx'
+});
 
-const plainFile = {
-	...file,
-	buffer: new Buffer('<div />'),
-	dependencies: {}
-};
+const plainFile = getFile({
+	buffer: new Buffer('<div />')
+});
 
-const plainAsiFile = {
-	...file,
+const plainAsiFile = getFile({
 	buffer: new Buffer(unindent(`
 	console.log()
 	// foo bar
 	<div/>
-	`)),
-	dependencies: {}
-};
+	`))
+});
 
-const statelessFile = {
+const statelessFile = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
 	import React from 'react';
@@ -84,11 +82,10 @@ const statelessFile = {
 		return (<div />);
 	};
 	`)),
-	path: 'stateless/index.jsx',
-	dependencies: {}
-};
+	path: 'stateless/index.jsx'
+});
 
-const fullFile = {
+const fullFile = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
 	import React from 'react';
@@ -99,11 +96,10 @@ const fullFile = {
 		}
 	}
 	`)),
-	path: 'full/index.jsx',
-	dependencies: {}
-};
+	path: 'full/index.jsx'
+});
 
-const reservedPropsDeclaration = {
+const reservedPropsDeclaration = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
 	const props = {
@@ -113,11 +109,10 @@ const reservedPropsDeclaration = {
 	<div {...this.props} className={props.className}>
 		{props.content}
 	</div>
-	`)),
-	dependencies: {}
-};
+	`))
+});
 
-const reservedContextDeclaration = {
+const reservedContextDeclaration = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
 	const context = {
@@ -127,21 +122,19 @@ const reservedContextDeclaration = {
 	<div {...this.props} className={context.className}>
 		{context.content}
 	</div>
-	`)),
-	dependencies: {}
-};
+	`))
+});
 
-const variableDeclarator = {
+const variableDeclarator = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
 	const Test = {};
 	const key = props.foo;
 	<div {...props} key={key}/>
-	`)),
-	dependencies: {}
-};
+	`))
+});
 
-const functionDeclarator = {
+const functionDeclarator = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
 	// function Test(props) { console.log(props); };
@@ -149,11 +142,10 @@ const functionDeclarator = {
 	// Test(props);
 	_Test();
 	<div/>
-	`)),
-	dependencies: {}
-};
+	`))
+});
 
-const classDeclarator = {
+const classDeclarator = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
 	class Test {
@@ -167,11 +159,10 @@ const classDeclarator = {
 	};
 	new Test();
 	<div/>
-	`)),
-	dependencies: {}
-};
+	`))
+});
 
-const plainThis = {
+const plainThis = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
 	const foo = this.props.foo;
@@ -190,19 +181,17 @@ const plainThis = {
 			{foo.children}
 		</Foo>
 	</div>
-	`)),
-	dependencies: {}
-};
+	`))
+});
 
-const dependency = {
+const dependency = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
 	<div className="dependency"/>
-	`)),
-	dependencies: {}
-};
+	`))
+});
 
-const implicitDependencies = {
+const implicitDependencies = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
 	<div>
@@ -212,9 +201,9 @@ const implicitDependencies = {
 	dependencies: {
 		dependency
 	}
-};
+});
 
-const missingDependencies = {
+const missingDependencies = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
 	<MissingDependency />
@@ -222,7 +211,21 @@ const missingDependencies = {
 	dependencies: {
 		dependency
 	}
-};
+});
+
+const explicitDependencies = getFile({
+	...file,
+	buffer: new Buffer(unindent(`
+	import _ from 'lodash';
+	import fp from 'lodash/fp';
+	import Dependency from 'dependency';
+
+	<div />
+	`)),
+	dependencies: {
+		dependency
+	}
+});
 
 export {
 	OldReact,
@@ -242,5 +245,6 @@ export {
 	plainThis,
 	dependency,
 	implicitDependencies,
-	missingDependencies
+	missingDependencies,
+	explicitDependencies
 };
