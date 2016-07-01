@@ -1,3 +1,13 @@
+<a name="0.4.8"></a>
+## [0.4.8](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.7...v0.4.8) (2016-07-01)
+
+
+### Bug Fixes
+
+* **system:** yaf for sinnerschrader/patternplate[#75](https://github.com/sinnerschrader/patternplate-transform-react/issues/75) ([2b48f9c](https://github.com/sinnerschrader/patternplate-transform-react/commit/2b48f9c))
+
+
+
 <a name="0.4.7"></a>
 ## [0.4.7](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.6...v0.4.7) (2016-06-28)
 
