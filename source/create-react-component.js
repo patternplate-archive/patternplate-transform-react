@@ -65,10 +65,11 @@ export default (ast, name, globals = {}) => {
 		Program: {
 			exit(path) {
 				const NAME = path.scope.generateUidIdentifier(name);
+
 				// Get a react component ast
 				const component = getComponentTemplate({stateless})({
 					AUXILIARY: auxiliary.map(path => path.node),
-					JSX: jsx,
+					JSX: jsx.node,
 					NAME
 				});
 

@@ -1,6 +1,10 @@
 import traverse from 'babel-traverse';
 import isTopLevel from './is-top-level';
 
+function isEntryJSX(path) {
+	return 'openingElement' in path.node;
+}
+
 /**
  * Get JSX expressions residing in the outermost scope of a program
  * @param  {Object} ast to search in
@@ -12,7 +16,7 @@ export default ast => {
 	traverse(ast, {
 		JSXElement: {
 			exit(path) {
-				if (isTopLevel(path)) {
+				if (isTopLevel(path) && isEntryJSX(path)) {
 					plain.push(path);
 				}
 			}

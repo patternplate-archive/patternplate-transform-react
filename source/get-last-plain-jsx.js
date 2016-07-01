@@ -7,6 +7,7 @@ import getPlainJSX from './get-plain-jsx';
  */
 export default ast => {
 	const plainJSX = getPlainJSX(ast);
+
 	return plainJSX.length > 0 ?
 		plainJSX[plainJSX.length - 1] :
 		null;
