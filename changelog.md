@@ -1,3 +1,13 @@
+<a name="0.4.9"></a>
+## [0.4.9](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.8...v0.4.9) (2016-07-01)
+
+
+### Bug Fixes
+
+* **generation:** use JSXElement.path.node to avoid babel-generator bugs ([f0841b6](https://github.com/sinnerschrader/patternplate-transform-react/commit/f0841b6))
+
+
+
 <a name="0.4.8"></a>
 ## [0.4.8](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.7...v0.4.8) (2016-07-01)
 
