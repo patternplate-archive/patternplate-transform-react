@@ -6,6 +6,7 @@
       [
         "detection",
         "generation",
+        "package",
         "transformation",
         "release",
         "system"
