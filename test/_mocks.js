@@ -67,7 +67,7 @@ const plainFile = getFile({
 
 const plainAsiFile = getFile({
 	buffer: new Buffer(unindent(`
-	console.log()
+	console.log('this. should. fail.')
 	// foo bar
 	<div/>
 	`))
@@ -106,7 +106,7 @@ const reservedPropsDeclaration = getFile({
 		content: 'foo',
 		className: 'bar'
 	};
-	<div {...this.props} className={props.className}>
+	<div {...this.props} className="bar">
 		{props.content}
 	</div>
 	`))
@@ -129,7 +129,7 @@ const variableDeclarator = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
 	const Test = {};
-	const key = props.foo;
+	const key = props.key;
 	<div {...props} key={key}/>
 	`))
 });
@@ -216,11 +216,7 @@ const missingDependencies = getFile({
 const explicitDependencies = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
-	import _ from 'lodash';
-	import fp from 'lodash/fp';
-	import Dependency from 'dependency';
-
-	<div />
+	<div/>
 	`)),
 	dependencies: {
 		dependency

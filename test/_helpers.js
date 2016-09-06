@@ -6,7 +6,9 @@ import {renderToStaticMarkup} from 'react-dom/server';
 
 const defaults = {
 	exports: {},
+	console,
 	module,
+	Object,
 	require
 };
 
@@ -38,10 +40,27 @@ class StatelessWrapper extends React.Component {
 	}
 }
 
+const trap = () => {
+	const errors = [];
+	const warnings = [];
+
+	function release() {
+		delete console.warn;
+		delete console.error;
+		return {errors, warnings};
+	}
+
+	console.error = (...args) => errors.push(args);
+	console.warn = (...args) => warnings.push(args);
+
+	return release;
+};
+
 export {
 	render,
 	virtualModule,
 	virtualRender,
 	runTimes,
-	StatelessWrapper
+	StatelessWrapper,
+	trap
 };

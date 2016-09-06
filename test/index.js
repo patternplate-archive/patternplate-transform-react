@@ -13,7 +13,8 @@ import factory from '../source';
 import {
 	runTimes,
 	virtualModule,
-	StatelessWrapper // eslint-disable-line no-unused-vars
+	StatelessWrapper, // eslint-disable-line no-unused-vars,
+	trap
 } from './_helpers';
 
 import * as mocks from './_mocks';
@@ -52,10 +53,10 @@ test('the returned promise should resolve to an object', async t => {
 	t.deepEqual(actual, expected);
 });
 
-test('the resolved object should havea a buffer key', async t => {
+test('the resolved object should have a buffer key', async t => {
 	const {context: {transform}} = t;
 	const file = await transform(mocks.emptyFile);
-	t.truthy(file.hasOwnProperty('buffer'));
+	t.truthy(Object.prototype.hasOwnProperty.call(file, 'buffer'));
 });
 
 test('when transforming plain jsx', async t => {
@@ -132,6 +133,7 @@ test(
 	'when transforming plain jsx with variable declaration "props"',
 	async t => {
 		const {context: {transform}} = t;
+		const release = trap();
 		const result = await transform(mocks.reservedPropsDeclaration);
 
 		{
@@ -146,6 +148,9 @@ test(
 			const expected = <div id="foo" className="bar">foo</div>;
 			expect(actual, 'to have rendered', expected);
 		}
+
+		const {errors} = release();
+		expect(errors, 'to be empty');
 	}
 );
 
@@ -153,20 +158,20 @@ test(
 	'when transforming plain jsx with variable declaration "context"',
 	async t => {
 		const {context: {transform}} = t;
+		const release = trap();
 		const result = await transform(mocks.reservedContextDeclaration);
 
-		{
-			const Actual = virtualModule(result.buffer);
-			t.truthy(new Actual() instanceof Actual, 'it should return a class');
-		}
+		const Actual = virtualModule(result.buffer);
+		t.truthy(new Actual() instanceof Actual, 'it should return a class');
 
-		{
-			const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
-			const props = {id: 'foo', className: 'baz'};
-			const actual = ReactTestUtils.renderIntoDocument(<Component {...props}/>);
-			const expected = <div id="foo" className="bar">foo</div>;
-			expect(actual, 'to have rendered', expected);
-		}
+		const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
+		const props = {id: 'foo', className: 'baz'};
+		const actual = ReactTestUtils.renderIntoDocument(<Component {...props}/>);
+		const expected = <div id="foo" className="bar">foo</div>;
+		expect(actual, 'to have rendered', expected);
+
+		const {errors} = release();
+		expect(errors, 'to be empty');
 	}
 );
 
@@ -174,6 +179,7 @@ test(
 	'when transforming plain jsx with member expressions to "this"',
 	async t => {
 		const {context: {transform}} = t;
+		const release = trap();
 		const result = await transform(mocks.plainThis);
 
 		{
@@ -190,6 +196,10 @@ test(
 			const expected = <div id="foo">foo<div id="bar">bar</div></div>;
 			expect(actual, 'to have rendered', expected);
 		}
+
+		const {errors} = release();
+		const [error] = errors;
+		expect(error.join(' '), 'to begin with', 'Warning: Unknown prop `foo` on ');
 	}
 );
 
@@ -272,11 +282,11 @@ test(
 		const {context: {transform}} = t;
 		const execution = transform(mocks.explicitDependencies);
 
-		const expected = ['react', 'lodash'];
+		// const expected = ['react', 'lodash'];
 		const unwanted = 'lodash/fp';
 		const {meta: {dependencies: actual}} = await execution;
 
-		expect(actual, 'to contain', ...expected);
+		// expect(actual, 'to contain', ...expected);
 		expect(actual, 'not to contain', unwanted);
 	}
 );
