@@ -94,6 +94,7 @@
     "babel-cli": "6.14.0",
     "babel-eslint": "6.1.2",
     "babel-plugin-add-module-exports": "0.2.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "6.14.0",
     "babel-polyfill": "6.9.1",
     "babel-preset-async-to-bluebird": "1.1.0",
     "babel-preset-es2015-node4": "2.1.0",
