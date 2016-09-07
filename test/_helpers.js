@@ -1,29 +1,17 @@
-import vm from 'vm';
-import {merge} from 'lodash';
 import Promise from 'bluebird';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-
-const defaults = {
-	exports: {},
-	console,
-	module,
-	Object,
-	require
-};
+import requireFromString from 'require-from-string';
 
 const render = (Component, props, children) => {
 	const component = React.createElement(Component, props, children);
 	return renderToStaticMarkup(component);
 };
 
-const virtualModule = (code, options) => {
-	const settings = merge({}, defaults, options);
-	return vm.runInNewContext(code, settings);
-};
+const virtualModule = requireFromString;
 
 const virtualRender = (code, options, props, children) => {
-	const Component = virtualModule(code, options);
+	const Component = requireFromString(code);
 	return render(Component, props, children);
 };
 

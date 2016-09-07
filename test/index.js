@@ -179,7 +179,6 @@ test(
 	'when transforming plain jsx with member expressions to "this"',
 	async t => {
 		const {context: {transform}} = t;
-		const release = trap();
 		const result = await transform(mocks.plainThis);
 
 		{
@@ -196,10 +195,6 @@ test(
 			const expected = <div id="foo">foo<div id="bar">bar</div></div>;
 			expect(actual, 'to have rendered', expected);
 		}
-
-		const {errors} = release();
-		const [error] = errors;
-		expect(error.join(' '), 'to begin with', 'Warning: Unknown prop `foo` on ');
 	}
 );
 
@@ -282,11 +277,11 @@ test(
 		const {context: {transform}} = t;
 		const execution = transform(mocks.explicitDependencies);
 
-		// const expected = ['react', 'lodash'];
+		const expected = ['react', 'lodash'];
 		const unwanted = 'lodash/fp';
 		const {meta: {dependencies: actual}} = await execution;
 
-		// expect(actual, 'to contain', ...expected);
+		expect(actual, 'to contain', ...expected);
 		expect(actual, 'not to contain', unwanted);
 	}
 );

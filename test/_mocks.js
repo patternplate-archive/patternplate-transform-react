@@ -216,7 +216,12 @@ const missingDependencies = getFile({
 const explicitDependencies = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
-	<div/>
+	import _ from 'lodash';
+	import fp from 'lodash/fp';
+	import Dependency from 'dependency';
+	console.log(_.uniq);
+
+	<div />
 	`)),
 	dependencies: {
 		dependency
