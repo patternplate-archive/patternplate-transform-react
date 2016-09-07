@@ -25,6 +25,8 @@ const expect = unexpected.clone()
 
 test.beforeEach(t => {
 	t.context.transform = factory(mocks.application);
+	t.context.errors = [];
+	console.error = (...args) => t.context.errors.push(args);
 });
 
 test('it should export a function as default', t => {
@@ -154,7 +156,7 @@ test(
 	}
 );
 
-test(
+test.only(
 	'when transforming plain jsx with variable declaration "context"',
 	async t => {
 		const {context: {transform}} = t;

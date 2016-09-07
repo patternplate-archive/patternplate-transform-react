@@ -2,8 +2,7 @@
 import {Application, File, Transform} from './types';
 
 import chalk from 'chalk';
-import {transform} from 'babel-core';
-import generate from 'babel-generator';
+import {transformFromAst} from 'babel-core';
 import {merge, omit, values} from 'lodash';
 import pascalCase from 'pascal-case';
 
@@ -15,14 +14,10 @@ import getResolvableDependencies from './get-resolvable-dependencies';
 import injectImplicitDependencies from './inject-implicit-dependencies';
 import parse from './parse';
 
-// TODO: enable this when switching to babel 6
-/* const babelDefaults = {
-	presets: []
+const babelDefaults = {
+	presets: ['react', 'es2015'],
+	plugins: ['transform-es2015-modules-commonjs', 'transform-runtime']
 };
-
-const requiredBabelPresets = ['react', 'es2015']; */
-
-const babelDefaults = {};
 
 async function convertCode(application, file, settings) {
 	const deprecationMapping = {
@@ -68,8 +63,10 @@ async function convertCode(application, file, settings) {
 
 	const mtime = file.mtime || file.fs.node.mtime;
 
+	const source = file.buffer.toString('utf-8');
+
 	const ast = application.cache.get(parseKey, mtime) ||
-		parse(file.buffer.toString('utf-8'));
+		parse(source);
 
 	application.cache.set(parseKey, mtime, ast);
 
@@ -126,21 +123,8 @@ async function convertCode(application, file, settings) {
 
 	const babelOptions = merge({}, omit(options, ['globals']), babelDefaults);
 
-	// TODO: enable this when switching to babel 6
-	// some babel-presets are required
-	/* requiredBabelPresets.forEach(requiredBabelPreset => {
-		if (babelOptions.presets.includes(requiredBabelPreset) === false) {
-			babelOptions.presets.push(requiredBabelPreset);
-		}
-	}); */
-
-	// TODO: switch to babel6, use transformFromAst
-	// TODO: transform should move to babel transform completely
-	const {code} = application.cache.get(transformKey, mtime) ||
-		transform(
-			generate(component.program).code,
-			babelOptions
-		);
+	const {code} = /* application.cache.get(transformKey, mtime) ||*/
+		transformFromAst(component.program, source, babelOptions);
 
 	application.cache.set(transformKey, mtime, {code});
 
