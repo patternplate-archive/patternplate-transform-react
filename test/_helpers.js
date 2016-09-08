@@ -1,4 +1,3 @@
-import Promise from 'bluebird';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import requireFromString from 'require-from-string';
@@ -16,10 +15,12 @@ const virtualRender = (code, options, props, children) => {
 };
 
 const runTimes = async (fn, times = 1, initial) => {
-	return Promise.reduce(Array(times).fill(), async registry => {
-		const previous = registry[registry.length - 1];
-		return [...registry, await fn(previous || initial)];
-	}, []);
+	return Array(times).fill()
+		.reduce(async queue => {
+			const results = await queue;
+			const previous = results[results.length - 1];
+			return [...results, await fn(previous || initial)];
+		}, Promise.resolve([initial]));
 };
 
 class StatelessWrapper extends React.Component {
