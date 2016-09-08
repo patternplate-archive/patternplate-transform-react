@@ -1,3 +1,8 @@
+<a name="0.4.12"></a>
+## [0.4.12](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.11...v0.4.12) (2016-09-08)
+
+
+
 <a name="0.4.11"></a>
 ## [0.4.11](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.10...v0.4.11) (2016-09-08)
 
