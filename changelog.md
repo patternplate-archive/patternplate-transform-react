@@ -1,3 +1,13 @@
+<a name="0.4.11"></a>
+## [0.4.11](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.10...v0.4.11) (2016-09-08)
+
+
+### Bug Fixes
+
+* **system:** support win32 ([06ffb4b](https://github.com/sinnerschrader/patternplate-transform-react/commit/06ffb4b))
+
+
+
 <a name="0.4.10"></a>
 ## [0.4.10](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.9...v0.4.10) (2016-07-01)
 
