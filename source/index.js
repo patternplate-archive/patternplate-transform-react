@@ -2,27 +2,16 @@
 import {Application, File, Transform} from './types';
 
 import chalk from 'chalk';
-import {transform} from 'babel-core';
 import generate from 'babel-generator';
-import {merge, omit, values} from 'lodash';
+import {merge, values} from 'lodash';
 import pascalCase from 'pascal-case';
 
 import createReactComponent from './create-react-component';
-// import deprecateGlobalConfiguration from './deprecate-global-configuration';
 import deprecateImplicitDependencies from './deprecate-implicit-dependencies';
 import getImplicitDependencies from './get-implicit-dependencies';
 import getResolvableDependencies from './get-resolvable-dependencies';
 import injectImplicitDependencies from './inject-implicit-dependencies';
 import parse from './parse';
-
-// TODO: enable this when switching to babel 6
-/* const babelDefaults = {
-	presets: []
-};
-
-const requiredBabelPresets = ['react', 'es2015']; */
-
-const babelDefaults = {};
 
 async function convertCode(application, file, settings) {
 	const deprecationMapping = {
@@ -124,23 +113,8 @@ async function convertCode(application, file, settings) {
 		}));
 	}
 
-	const babelOptions = merge({}, omit(options, ['globals']), babelDefaults);
-
-	// TODO: enable this when switching to babel 6
-	// some babel-presets are required
-	/* requiredBabelPresets.forEach(requiredBabelPreset => {
-		if (babelOptions.presets.includes(requiredBabelPreset) === false) {
-			babelOptions.presets.push(requiredBabelPreset);
-		}
-	}); */
-
-	// TODO: switch to babel6, use transformFromAst
-	// TODO: transform should move to babel transform completely
 	const {code} = application.cache.get(transformKey, mtime) ||
-		transform(
-			generate(component.program).code,
-			babelOptions
-		);
+		generate(component.program);
 
 	application.cache.set(transformKey, mtime, {code});
 

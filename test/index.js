@@ -64,8 +64,9 @@ test('when transforming plain jsx', async t => {
 	const result = await transform(mocks.plainFile);
 
 	{
-		const Actual = virtualModule(result.buffer);
-		t.falsy(new Actual() instanceof Actual, 'it should return a function');
+		const actual = virtualModule(result.buffer);
+		const value = actual();
+		t.falsy(value.constructor === actual, 'it should return a function');
 	}
 
 	{
@@ -83,8 +84,9 @@ test('when transforming a react stateless component', async t => {
 	const result = await transform(mocks.statelessFile);
 
 	{
-		const Actual = virtualModule(result.buffer);
-		t.falsy(new Actual() instanceof Actual, 'it should return a function');
+		const actual = virtualModule(result.buffer);
+		const value = actual();
+		t.falsy(value.constructor === actual, 'it should return a function');
 	}
 
 	{
