@@ -14,8 +14,7 @@
     "build": "babel source --out-dir distribution",
     "postbuild": "npm test",
     "lint": "parallelshell \"npm run lint:eslint\" \"npm run lint:flow\" \"npm run lint:jsonlint\" \"npm run lint:deps\"",
-    "test": "parallelshell \"npm run test:ava\"",
-    "test:ava": "ava",
+    "test": "ava",
     "test:coverage": "nyc ava",
     "lint:eslint": "eslint source/**/*.js",
     "lint:jsonlint": "jsonlint-cli **/*.json",
@@ -64,7 +63,7 @@
     "url": "git+https://github.com/sinnerschrader/patternplate-transform-react.git"
   },
   "bugs": {
-    "url": "https://github.com/sinnerschrader/patternplate-transform-react/issues"
+    "url": "https://github.com/sinnerschrader/patternplate/issues"
   },
   "homepage": "https://github.com/sinnerschrader/patternplate-transform-react#readme",
   "keywords": [
@@ -91,6 +90,7 @@
   "devDependencies": {
     "ava": "0.16.0",
     "babel-cli": "6.14.0",
+    "babel-core": "6.14.0",
     "babel-eslint": "6.1.2",
     "babel-plugin-add-module-exports": "0.2.1",
     "babel-preset-es2015-node4": "2.1.0",
@@ -127,7 +127,6 @@
   },
   "dependencies": {
     "babel-code-frame": "6.11.0",
-    "babel-core": "5.8.38",
     "babel-generator": "6.14.0",
     "babel-polyfill": "6.13.0",
     "babel-template": "6.15.0",
