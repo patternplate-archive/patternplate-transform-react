@@ -182,20 +182,47 @@ test(
 	async t => {
 		const {context: {transform}} = t;
 		const result = await transform(mocks.plainThis);
+		const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
+
+		const props = {
+			foo: {id: 'bar', children: 'bar'},
+			id: 'foo', children: 'foo'
+		};
+
+		const actual = ReactTestUtils.renderIntoDocument(
+			<StatelessWrapper>
+				<Component {...props}>foo</Component>
+			</StatelessWrapper>
+		);
 
 		{
-			const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
-			const props = {
-				foo: {id: 'bar', children: 'bar'},
-				id: 'foo', children: 'foo'
-			};
-			const actual = ReactTestUtils.renderIntoDocument(
-				<StatelessWrapper>
-					<Component {...props}>foo</Component>
-				</StatelessWrapper>
-			);
 			const expected = <div id="foo">foo<div id="bar">bar</div></div>;
 			expect(actual, 'to have rendered', expected);
+		}
+	}
+);
+
+test(
+	'when transforming plain jsx with state handling',
+	async t => {
+		const {context: {transform}} = t;
+		const result = await transform(mocks.plainState);
+		const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
+
+		const actual = ReactTestUtils.renderIntoDocument(
+			<StatelessWrapper><Component/></StatelessWrapper>
+		);
+
+		{
+			const expected = <div/>;
+			expect(actual, 'to have rendered', expected);
+		}
+
+		{
+			const expected = <div className="tainted"/>;
+			expect(actual,
+				'with event click', 'on', <Component eventTarget/>,
+				'to have rendered', expected);
 		}
 	}
 );
@@ -217,7 +244,7 @@ test(
 		'when transforming plain jsx with a conflicting function declarator to a',
 		'stateless component'
 	].join(' '),
-	t => {
+	async t => {
 		const {context: {transform}} = t;
 		const execution = transform(mocks.functionDeclarator);
 		t.notThrows(execution, 'it should not fail');

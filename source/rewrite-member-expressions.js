@@ -54,7 +54,9 @@ function isReactMemberExpression(node) {
 		return isReactMemberExpression(node.object);
 	}
 
-	return ['props', 'context'].includes(node.property.name);
+	return [
+		'props', 'context'
+	].includes(node.property.name);
 }
 
 /**
@@ -80,6 +82,8 @@ export default ast => {
 					.split('.')
 					.slice(1)
 					.join('.');
+
+				console.log(sliced);
 
 				path.replaceWith(identifier(sliced));
 			}
