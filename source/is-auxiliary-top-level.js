@@ -12,4 +12,4 @@ export default path => {
 		outerMostScopeTypes.indexOf(parentType) > -1;
 };
 
-module.change_code = 1; // eslint-disable-line
+

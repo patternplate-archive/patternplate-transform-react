@@ -80,4 +80,4 @@ export default (ast, globals = {}) => {
 	return ast;
 };
 
-module.change_code = 1; // eslint-disable-line
+

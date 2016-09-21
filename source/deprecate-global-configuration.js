@@ -65,5 +65,3 @@ export default (application, file, globals) => {
 
 	application.log.warn(warning);
 };
-
-module.change_code = 1; // eslint-disable-line

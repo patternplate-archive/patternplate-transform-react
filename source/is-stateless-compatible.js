@@ -43,4 +43,4 @@ export default ast => {
 	return collisions.length === 0;
 };
 
-module.change_code = 1; // eslint-disable-line
+

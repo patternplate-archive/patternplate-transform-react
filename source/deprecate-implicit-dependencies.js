@@ -40,4 +40,4 @@ export default (application, file, registry) => {
 	application.log.warn(`${warning}\n`);
 };
 
-module.change_code = 1; // eslint-disable-line
+

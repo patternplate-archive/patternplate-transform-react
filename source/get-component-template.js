@@ -12,4 +12,4 @@ export default ({stateless}) => {
 		classTemplate;
 };
 
-module.change_code = 1; // eslint-disable-line
+

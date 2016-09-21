@@ -141,4 +141,4 @@ export default (application: Application): Transform => {
 };
 
 /* flow-include var module: { change_code?: number }; module = {}; */
-module.change_code = 1; // eslint-disable-line
+

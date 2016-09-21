@@ -56,4 +56,4 @@ export default (ast, candidates = []) => {
 		}, {});
 };
 
-module.change_code = 1; // eslint-disable-line
+

@@ -14,5 +14,3 @@ export default template(`
 `, {
 	sourceType: 'module'
 });
-
-module.change_code = 1; // eslint-disable-line
