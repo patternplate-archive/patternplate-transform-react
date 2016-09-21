@@ -1,6 +1,6 @@
 {
   "name": "patternplate-transform-react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "patternplate transform creating reusable React classes from jsx templates",
   "main": "distribution/index.js",
   "files": [
