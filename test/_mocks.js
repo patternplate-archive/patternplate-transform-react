@@ -219,6 +219,22 @@ const implicitDependencies = getFile({
 	}
 });
 
+const tagNameishImplicitDependencies = getFile({
+	...file,
+	buffer: new Buffer(unindent(`
+	<div>
+		<Image/>
+		<Button/>
+		<img/>
+		<button/>
+	</div>
+	`)),
+	dependencies: {
+		Image: dependency,
+		Button: dependency
+	}
+});
+
 const missingDependencies = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
@@ -264,5 +280,6 @@ export {
 	reservedContextDeclaration,
 	reservedPropsDeclaration,
 	statelessFile,
+	tagNameishImplicitDependencies,
 	variableDeclarator
 };
