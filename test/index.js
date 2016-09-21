@@ -273,6 +273,22 @@ test(
 );
 
 test(
+	'when transforming plain jsx with implicit dependencies named like html tags',
+	async t => {
+		const {context: {transform}} = t;
+		const result = await transform(mocks.tagNameishImplicitDependencies);
+		const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
+
+		const actual = ReactTestUtils.renderIntoDocument(
+			<StatelessWrapper><Component/></StatelessWrapper>
+		);
+
+		const expected = <div><div clasName="dependency"/><div clasName="dependency"/></div>; // eslint-disable-line max-len
+		expect(actual, 'to have rendered', expected);
+	}
+);
+
+test(
 	'when transforming plain jsx with implicit missing dependencies',
 	async t => {
 		const {context: {transform}} = t;
