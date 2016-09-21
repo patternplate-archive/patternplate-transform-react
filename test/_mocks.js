@@ -177,10 +177,26 @@ const plainThis = getFile({
 	}
 	<div {...this.props}>
 		{this.props.children}
+		{this.state.foo}
 		<Foo {...foo}>
 			{foo.children}
 		</Foo>
 	</div>
+	`))
+});
+
+const plainState = getFile({
+	...file,
+	buffer: new Buffer(unindent(`
+	const onClick = () => {
+		this.setState({
+			quality: 'tainted'
+		});
+	};
+	<div
+		className={this.state.quality}
+		onClick={onClick}
+		/>
 	`))
 });
 
@@ -199,6 +215,21 @@ const implicitDependencies = getFile({
 	</div>
 	`)),
 	dependencies: {
+		dependency
+	}
+});
+
+const tagNameishImplicitDependencies = getFile({
+	...file,
+	buffer: new Buffer(unindent(`
+	Image.doStuff();
+	<div>
+		<Button/>
+	</div>
+	`)),
+	dependencies: {
+		image: dependency,
+		button: dependency,
 		dependency
 	}
 });
@@ -229,23 +260,25 @@ const explicitDependencies = getFile({
 });
 
 export {
-	OldReact,
-	React,
-	config,
 	application,
-	emptyFile,
-	plainFile,
-	plainAsiFile,
-	statelessFile,
-	fullFile,
-	reservedPropsDeclaration,
-	reservedContextDeclaration,
-	variableDeclarator,
-	functionDeclarator,
 	classDeclarator,
-	plainThis,
+	config,
 	dependency,
+	emptyFile,
+	explicitDependencies,
+	fullFile,
+	functionDeclarator,
 	implicitDependencies,
 	missingDependencies,
-	explicitDependencies
+	OldReact,
+	plainAsiFile,
+	plainFile,
+	plainState,
+	plainThis,
+	React,
+	reservedContextDeclaration,
+	reservedPropsDeclaration,
+	statelessFile,
+	tagNameishImplicitDependencies,
+	variableDeclarator
 };

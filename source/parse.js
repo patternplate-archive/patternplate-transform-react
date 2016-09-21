@@ -115,4 +115,4 @@ export default (source: string) => {
 	}
 };
 
-module.change_code = 1; // eslint-disable-line
+

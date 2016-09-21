@@ -1,5 +1,7 @@
 import traverse from 'babel-traverse';
 
+const stateProps = ['setState', 'state'];
+
 /**
  * Check if a given plain jsx is compatible with transformation to a stateless
  * component
@@ -10,7 +12,7 @@ import traverse from 'babel-traverse';
  * @return boolean
  */
 export default ast => {
-	let collisions = [];
+	const collisions = [];
 
 	traverse(ast, {
 		Declaration(path) {
@@ -26,11 +28,19 @@ export default ast => {
 					return decl.id && ['props', 'context'].includes(decl.id.name);
 				});
 
-			collisions = [...collisions, ...colliding];
+			collisions.push(colliding);
+		},
+		MemberExpression: {
+			enter(path) {
+				// check for occurrences of this.state and this.setState
+				if (stateProps.includes(path.node.property)) {
+					collisions.push(path.node.property);
+				}
+			}
 		}
 	});
 
 	return collisions.length === 0;
 };
 
-module.change_code = 1; // eslint-disable-line
+

@@ -16,4 +16,4 @@ export default ast => {
 	return imports;
 };
 
-module.change_code = 1; // eslint-disable-line
+

@@ -54,7 +54,9 @@ function isReactMemberExpression(node) {
 		return isReactMemberExpression(node.object);
 	}
 
-	return ['props', 'context'].includes(node.property.name);
+	return [
+		'props', 'context'
+	].includes(node.property.name);
 }
 
 /**
@@ -89,4 +91,4 @@ export default ast => {
 	return ast;
 };
 
-module.change_code = 1; // eslint-disable-line
+

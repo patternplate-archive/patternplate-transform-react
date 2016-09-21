@@ -102,5 +102,3 @@ export default (ast, name, globals = {}) => {
 
 	return ast;
 };
-
-module.change_code = 1; // eslint-disable-line
