@@ -1,3 +1,14 @@
+<a name="0.14.13"></a>
+## [0.14.13](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.10...v0.14.13) (2016-09-21)
+
+
+### Bug Fixes
+
+* **detection:** allow non-jsx usage of implicit imports ([275043b](https://github.com/sinnerschrader/patternplate-transform-react/commit/275043b))
+* **detection:** support state-handling plain jsx components ([51d64f3](https://github.com/sinnerschrader/patternplate-transform-react/commit/51d64f3))
+
+
+
 <a name="0.4.10"></a>
 ## [0.4.10](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.9...v0.4.10) (2016-07-01)
 
