@@ -20,7 +20,7 @@
     "lint:jsonlint": "jsonlint-cli **/*.json",
     "lint:flow": "flow",
     "lint:deps": "dependency-check . --missing && dependency-check . --no-dev --extra",
-    "watch": "npm run test:ava -- --watch",
+    "watch": "npm run test -- --watch",
     "commit": "git-cz",
     "commitmsg": "conventional-changelog-lint -e",
     "changelog": "conventional-changelog --preset angular --infile changelog.md --same-file --output-unreleased",

@@ -50,11 +50,21 @@ const trap = () => {
 	return release;
 };
 
+function proxyRequire(code) {
+	return `
+		const required = [];
+		require = id => required.push(id);
+		${code}
+		module.exports.default = required;
+	`;
+}
+
 export {
+	proxyRequire,
 	render,
-	virtualModule,
-	virtualRender,
 	runTimes,
 	StatelessWrapper,
-	trap
+	trap,
+	virtualModule,
+	virtualRender
 };

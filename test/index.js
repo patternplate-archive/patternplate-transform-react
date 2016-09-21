@@ -11,6 +11,7 @@ import * as React from 'react'; // eslint-disable-line
 import factory from '../source';
 
 import {
+	proxyRequire,
 	runTimes,
 	virtualModule,
 	StatelessWrapper, // eslint-disable-line no-unused-vars,
@@ -284,8 +285,7 @@ test(
 	async t => {
 		const {context: {transform}} = t;
 		const result = await transform(mocks.tagNameishImplicitDependencies);
-		const required = [];
-		virtualModule(result.buffer, {require: id => required.push(id)});
+		const required = virtualModule(proxyRequire(result.buffer));
 		expect(required, 'to contain', 'image');
 		expect(required, 'to contain', 'button');
 	}
