@@ -222,16 +222,15 @@ const implicitDependencies = getFile({
 const tagNameishImplicitDependencies = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
+	Image.doStuff();
 	<div>
-		<Image/>
 		<Button/>
-		<img/>
-		<button/>
 	</div>
 	`)),
 	dependencies: {
-		Image: dependency,
-		Button: dependency
+		image: dependency,
+		button: dependency,
+		dependency
 	}
 });
 
