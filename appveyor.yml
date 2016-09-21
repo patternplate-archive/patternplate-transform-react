@@ -26,3 +26,4 @@ deploy: off
 branches:
   only:
     - master
+    - release/v0.4.13
