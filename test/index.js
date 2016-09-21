@@ -284,14 +284,10 @@ test(
 	async t => {
 		const {context: {transform}} = t;
 		const result = await transform(mocks.tagNameishImplicitDependencies);
-		const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
-
-		const actual = ReactTestUtils.renderIntoDocument(
-			<StatelessWrapper><Component/></StatelessWrapper>
-		);
-
-		const expected = <div><div clasName="dependency"/><div clasName="dependency"/></div>; // eslint-disable-line max-len
-		expect(actual, 'to have rendered', expected);
+		const required = [];
+		virtualModule(result.buffer, {require: id => required.push(id)});
+		expect(required, 'to contain', 'image');
+		expect(required, 'to contain', 'button');
 	}
 );
 

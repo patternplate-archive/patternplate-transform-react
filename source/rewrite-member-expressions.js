@@ -83,8 +83,6 @@ export default ast => {
 					.slice(1)
 					.join('.');
 
-				console.log(sliced);
-
 				path.replaceWith(identifier(sliced));
 			}
 		}

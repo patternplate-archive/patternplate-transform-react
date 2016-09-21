@@ -83,8 +83,10 @@ async function convertCode(application, file, settings) {
 			fn(deprecation);
 		});
 
+	const depNames = Object.keys(file.dependencies).map(name => pascalCase(name));
+
 	// Search for implicit dependencies
-	const implicitDependencyRegistry = getImplicitDependencies(ast);
+	const implicitDependencyRegistry = getImplicitDependencies(ast, depNames);
 	const implicitDependencies = values(implicitDependencyRegistry);
 
 	// Implicit dependencies are deprecated, warn users about them
