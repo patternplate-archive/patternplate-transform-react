@@ -1,3 +1,13 @@
+<a name="0.4.13"></a>
+## [0.4.13](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.14.13...v0.4.13) (2016-09-24)
+
+
+### Bug Fixes
+
+* **generation:** create es6 imports to avoid babel interop hiccups ([7675046](https://github.com/sinnerschrader/patternplate-transform-react/commit/7675046))
+
+
+
 <a name="0.14.13"></a>
 ## [0.14.13](https://github.com/sinnerschrader/patternplate-transform-react/compare/v0.4.10...v0.14.13) (2016-09-21)
 
