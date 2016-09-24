@@ -1,11 +1,5 @@
 import traverse from 'babel-traverse';
-
-import {
-	identifier,
-	stringLiteral
-} from 'babel-types';
-
-import importTemplate from './import-template';
+import createImport from './create-import';
 import getImports from './get-imports';
 
 export default ast => {
@@ -17,10 +11,7 @@ export default ast => {
 			Program: {
 				exit(path) {
 					path.unshiftContainer('body', [
-						importTemplate({
-							LOCAL: identifier('React'),
-							IMPORTED: stringLiteral('react')
-						})
+						createImport('React', 'react')
 					]);
 				}
 			}
