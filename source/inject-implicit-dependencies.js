@@ -1,6 +1,5 @@
 import traverse from 'babel-traverse';
-import {identifier, stringLiteral} from 'babel-types';
-import importTemplate from './import-template';
+import createImport from './create-import';
 
 /**
  * inject dependency imports into ast
@@ -11,15 +10,12 @@ import importTemplate from './import-template';
 export default (ast, dependencies) => {
 	const imports = Object.entries(dependencies)
 		.map(item => {
-			const [localName, importedName] = item;
-			const name = importedName === 'pattern' ?
+			const [specifier, importedName] = item;
+			const source = importedName === 'pattern' ?
 				'Pattern' :
 				importedName;
 
-			return importTemplate({
-				LOCAL: identifier(localName),
-				IMPORTED: stringLiteral(name)
-			});
+			return createImport(specifier, source);
 		});
 
 	traverse(ast, {
