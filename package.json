@@ -102,7 +102,7 @@
     "react-addons-test-utils": "15.3.2",
     "react-dom": "15.3.2",
     "require-from-string": "1.2.0",
-    "unexpected": "10.17.0",
+    "unexpected": "10.18.1",
     "unexpected-react": "3.2.4",
     "unindent": "2.0.0",
     "xo": "0.16.0"
