@@ -1,3 +1,13 @@
+<a name="1.1.1"></a>
+## [1.1.1](https://github.com/sinnerschrader/patternplate-transform-react/compare/v1.1.0...v1.1.1) (2016-09-27)
+
+
+### Bug Fixes
+
+* produce es5 if possible ([1220900](https://github.com/sinnerschrader/patternplate-transform-react/commit/1220900))
+
+
+
 <a name="1.1.0"></a>
 # [1.1.0](https://github.com/sinnerschrader/patternplate-transform-react/compare/v1.0.2...v1.1.0) (2016-09-27)
 
