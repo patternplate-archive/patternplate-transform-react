@@ -35,7 +35,7 @@ async function convertCode(application, file, settings) {
 	const {code} = cached.isCached ? cached : generate(program.program);
 	application.cache.set(cached.transformKey, false, {code, dependencyNames});
 
-	file.buffer = code;
+	file.buffer = `'use strict';\n${code}`;
 	file.meta.react = merge({}, file.meta.react, {
 		ast: program,
 		dependencyNames

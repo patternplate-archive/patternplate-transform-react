@@ -91,11 +91,11 @@ const fullFile = getFile({
 	buffer: new Buffer(unindent(`
 	var React = require('react');
 
-	module.exports = class FullComponent extends React.Component {
+	module.exports = React.createClass({
 		render() {
 			return <div />;
 		}
-	}
+	});
 	`)),
 	path: 'full/index.jsx'
 });
@@ -103,7 +103,7 @@ const fullFile = getFile({
 const reservedPropsDeclaration = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
-	const props = {
+	var props = {
 		content: 'foo',
 		className: 'bar'
 	};
@@ -116,7 +116,7 @@ const reservedPropsDeclaration = getFile({
 const reservedContextDeclaration = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
-	const context = {
+	var context = {
 		content: 'foo',
 		className: 'bar'
 	};
@@ -129,8 +129,9 @@ const reservedContextDeclaration = getFile({
 const variableDeclarator = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
-	const Test = {};
-	const key = props.key;
+	'use strict';
+	var Test = {};
+	var key = props.key;
 	<div {...props} key={key}/>
 	`))
 });
@@ -151,10 +152,8 @@ const classDeclarator = getFile({
 	buffer: new Buffer(unindent(`
 	class Test {
 		render() {
-			const {
-				component: Component,
-				...props
-			} = this.props;
+			var Component = this.props.component;
+			var props = this.props;
 			return <Component {...props} />;
 		}
 	};
@@ -166,7 +165,8 @@ const classDeclarator = getFile({
 const plainThis = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
-	const foo = this.props.foo;
+	'use strict';
+	var foo = this.props.foo;
 	class Foo extends React.Component {
 		render() {
 			return (
@@ -189,7 +189,7 @@ const plainThis = getFile({
 const plainState = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
-	const onClick = () => {
+	var onClick = () => {
 		this.setState({
 			quality: 'tainted'
 		});
