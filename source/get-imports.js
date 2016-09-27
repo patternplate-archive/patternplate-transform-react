@@ -28,12 +28,10 @@ export default ast => {
 				} else {
 					imports.push(path.parent);
 				}
-				identifiers.push(path.node.arguments[0]);
+				identifiers.push(path.node.arguments[0].value);
 			}
 		}
 	});
 
 	return {imports, identifiers};
 };
-
-

@@ -1,6 +1,8 @@
 import traverse from 'babel-traverse';
+import {isThisExpression} from 'babel-types';
 
-const stateProps = ['setState', 'state'];
+const propMembers = ['props', 'context'];
+const stateMembers = ['setState', 'state'];
 
 /**
  * Check if a given plain jsx is compatible with transformation to a stateless
@@ -24,16 +26,22 @@ export default ast => {
 
 			const colliding = declarations
 				// Check for naming collision
-				.filter(decl => {
-					return decl.id && ['props', 'context'].includes(decl.id.name);
+				.filter(decl => decl.id)
+				.find(decl => {
+					return propMembers.includes(decl.id.name);
 				});
 
-			collisions.push(colliding);
+			if (colliding) {
+				collisions.push(colliding);
+			}
 		},
 		MemberExpression: {
 			enter(path) {
 				// check for occurrences of this.state and this.setState
-				if (stateProps.includes(path.node.property)) {
+				const obj = path.node.object;
+				const prop = path.node.property;
+
+				if (isThisExpression(obj) && stateMembers.includes(prop.name)) {
 					collisions.push(path.node.property);
 				}
 			}
@@ -42,5 +50,3 @@ export default ast => {
 
 	return collisions.length === 0;
 };
-
-

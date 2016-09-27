@@ -1,3 +1,4 @@
+// eslint-disable xo/filename-case;
 import {transform} from 'babel-core';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';

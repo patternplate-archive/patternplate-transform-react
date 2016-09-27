@@ -11,7 +11,6 @@ import * as React from 'react'; // eslint-disable-line
 import factory from '../source';
 
 import {
-	proxyRequire,
 	runTimes,
 	virtualModule,
 	StatelessWrapper, // eslint-disable-line no-unused-vars,
@@ -67,7 +66,7 @@ test('when transforming plain jsx', async t => {
 	{
 		const actual = virtualModule(result.buffer);
 		const value = actual();
-		t.falsy(value.constructor === actual, 'it should return a function');
+		t.false(value.constructor === actual, 'it should return a function');
 	}
 
 	{
@@ -87,7 +86,7 @@ test('when transforming a react stateless component', async t => {
 	{
 		const actual = virtualModule(result.buffer);
 		const value = actual();
-		t.falsy(value.constructor === actual, 'it should return a function');
+		t.false(value.constructor === actual, 'it should return a function');
 	}
 
 	{
@@ -268,35 +267,7 @@ test(
 	'when transforming plain jsx with implicit dependencies',
 	async t => {
 		const {context: {transform}} = t;
-		const execution = transform(mocks.implicitDependencies);
-
-		t.notThrows(execution, 'it should not fail');
-
-		{
-			const expected = ['react'];
-			const {meta: {dependencies: actual}} = await execution;
-			expect(actual, 'to equal', expected);
-		}
-	}
-);
-
-test(
-	'when transforming plain jsx with implicit dependencies named like html tags',
-	async t => {
-		const {context: {transform}} = t;
-		const result = await transform(mocks.tagNameishImplicitDependencies);
-		const required = virtualModule(proxyRequire(result.buffer));
-		expect(required, 'to contain', 'image');
-		expect(required, 'to contain', 'button');
-	}
-);
-
-test(
-	'when transforming plain jsx with implicit missing dependencies',
-	async t => {
-		const {context: {transform}} = t;
-		const execution = transform(mocks.missingDependencies);
-		t.throws(execution, Error, 'it should fail');
+		t.throws(transform(mocks.implicitDependencies), Error, 'it should fail');
 	}
 );
 
@@ -304,8 +275,7 @@ test(
 	'when running the transform multiple times on the same file',
 	async t => {
 		const {context: {transform}} = t;
-
-		const results = await runTimes(transform, 10, mocks.implicitDependencies);
+		const results = await runTimes(transform, 10, mocks.explicitDependencies);
 		const actual = uniqBy(results, 'buffer').length;
 		const expected = 1;
 		t.is(actual, expected, 'the buffer should not change');
@@ -324,5 +294,27 @@ test(
 
 		expect(actual, 'to contain', ...expected);
 		expect(actual, 'not to contain', unwanted);
+	}
+);
+
+test(
+	'when transforming a plain file with React require call',
+	async t => {
+		const {context: {transform}} = t;
+		const actual = await transform(mocks.simpleFile);
+		expect(actual.buffer, 'to match', /require\(['"]react['"]\)/g)
+			.then(c => {
+				expect(c.length, 'to be', 1);
+			});
+	}
+);
+
+test(
+	'when transforming a file',
+	async t => {
+		const {context: {transform}} = t;
+		const actual = await transform(mocks.simpleFile);
+		const expected = `React.createElement("div", {    ...props,    ...{      className: props.className    }  }, React.createElement(Dependency, null));`;
+		expect(actual.buffer.split('\n').join(''), 'to contain', expected);
 	}
 );

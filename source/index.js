@@ -1,16 +1,12 @@
-/* @flow */
-import {Application, File, Transform} from './types';
-
 import chalk from 'chalk';
 import generate from 'babel-generator';
 import {merge, values} from 'lodash';
 import pascalCase from 'pascal-case';
+import transformJSX from 'babylon-jsx';
 
 import createReactComponent from './create-react-component';
-import deprecateImplicitDependencies from './deprecate-implicit-dependencies';
 import getImplicitDependencies from './get-implicit-dependencies';
 import getResolvableDependencies from './get-resolvable-dependencies';
-import injectImplicitDependencies from './inject-implicit-dependencies';
 import parse from './parse';
 
 async function convertCode(application, file, settings) {
@@ -65,10 +61,6 @@ async function convertCode(application, file, settings) {
 	// manifest.name is used as name for wrapped components
 	const manifestName = file.pattern.manifest.name;
 
-	// if (Object.keys(options.globals).length > 0) {
-	// 	deprecateGlobalConfiguration(application, file, options.globals || {});
-	// }
-
 	// Get the component ast
 	const component = createReactComponent(
 		ast,
@@ -85,17 +77,13 @@ async function convertCode(application, file, settings) {
 
 	const depNames = Object.keys(file.dependencies).map(name => pascalCase(name));
 
+	// TODO: Remove this with the next feature release
 	// Search for implicit dependencies
 	const implicitDependencyRegistry = getImplicitDependencies(ast, depNames);
 	const implicitDependencies = values(implicitDependencyRegistry);
-
-	// Implicit dependencies are deprecated, warn users about them
 	if (implicitDependencies.length > 0) {
-		deprecateImplicitDependencies(
-			application, file, implicitDependencyRegistry
-		);
-		// Inject them anyway
-		injectImplicitDependencies(component, implicitDependencyRegistry);
+		const list = implicitDependencies.join(', ');
+		throw new Error(`Implicit dependencies are not supported after patternplate-transform-react@1. Implicit dependencies found: ${list}`);
 	}
 
 	// Check if dependencies are found in pattern.dependencies,
@@ -115,30 +103,29 @@ async function convertCode(application, file, settings) {
 		}));
 	}
 
+	const program = transformJSX(component, 'React.createElement');
+
 	const {code} = application.cache.get(transformKey, mtime) ||
-		generate(component.program);
+		generate(program.program);
 
 	application.cache.set(transformKey, mtime, {code});
 
 	file.buffer = code;
 	file.meta.react = merge({}, file.meta.react, {
-		ast: component,
+		ast: program,
 		dependencyNames
 	});
 	return file;
 }
 
 function getReactTransformFunction(application, config) {
-	return async (file: File, _, configuration) => {
+	return async (file, _, configuration) => {
 		const settings = merge({}, config, configuration);
 		return await convertCode(application, file, settings);
 	};
 }
 
-export default (application: Application): Transform => {
+export default application => {
 	const {configuration: {transforms: {react: config}}} = application;
 	return getReactTransformFunction(application, config);
 };
-
-/* flow-include var module: { change_code?: number }; module = {}; */
-

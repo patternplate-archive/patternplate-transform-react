@@ -1,3 +1,4 @@
+// eslint-disable xo/filename-case;
 import unindent from 'unindent';
 import {merge} from 'lodash/fp';
 
@@ -259,6 +260,29 @@ const explicitDependencies = getFile({
 	}
 });
 
+const simpleFile = getFile({
+	...file,
+	buffer: new Buffer(unindent(`
+	var React = require('react');
+	var Dependency = require('dependency');
+
+	<div {...props} className={props.className}>
+		<Dependency/>
+	</div>
+	`)),
+	dependencies: {
+		dependency
+	}
+});
+
+const reactRequire = getFile({
+	...file,
+	buffer: new Buffer(unindent(`
+	var React = require('react');
+	<div/>
+	`))
+});
+
 export {
 	application,
 	classDeclarator,
@@ -276,8 +300,10 @@ export {
 	plainState,
 	plainThis,
 	React,
+	reactRequire,
 	reservedContextDeclaration,
 	reservedPropsDeclaration,
+	simpleFile,
 	statelessFile,
 	tagNameishImplicitDependencies,
 	variableDeclarator
