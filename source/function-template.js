@@ -9,4 +9,3 @@ export default template(`
 	sourceType: 'module'
 });
 
-

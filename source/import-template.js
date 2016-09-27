@@ -1,5 +1,5 @@
 import template from 'babel-template';
 
-export default template(`var LOCAL = require(IMPORTED);`, {
+export default template(`const LOCAL = require(IMPORTED);`, {
 	sourceType: 'module'
 });
