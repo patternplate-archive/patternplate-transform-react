@@ -1,3 +1,4 @@
+// eslint-disable xo/filename-case;
 import {jsdom} from 'jsdom';
 
 // Provide an emulated DOM environment for React testing
