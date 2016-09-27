@@ -1,3 +1,13 @@
+<a name="1.1.2"></a>
+## [1.1.2](https://github.com/sinnerschrader/patternplate-transform-react/compare/v1.1.1...v1.1.2) (2016-09-27)
+
+
+### Bug Fixes
+
+* produce node4 lts compatible code ([#29](https://github.com/sinnerschrader/patternplate-transform-react/issues/29)) ([4a26ca5](https://github.com/sinnerschrader/patternplate-transform-react/commit/4a26ca5))
+
+
+
 <a name="1.1.1"></a>
 ## [1.1.1](https://github.com/sinnerschrader/patternplate-transform-react/compare/v1.1.0...v1.1.1) (2016-09-27)
 
