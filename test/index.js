@@ -132,7 +132,7 @@ test('when transforming invalid plain jsx', t => {
 });
 
 test(
-	'when transforming plain jsx with variable declaration "props"',
+	'when transforming plain jsx with variable declaration with identifier "props"',
 	async t => {
 		const {context: {transform}} = t;
 		const release = trap();
@@ -147,7 +147,7 @@ test(
 			const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
 			const props = {id: 'foo', className: 'baz'};
 			const actual = ReactTestUtils.renderIntoDocument(<Component {...props}/>);
-			const expected = <div id="foo" className="bar">foo</div>;
+			const expected = <div className="bar">foo</div>;
 			expect(actual, 'to have rendered', expected);
 		}
 
@@ -157,7 +157,7 @@ test(
 );
 
 test(
-	'when transforming plain jsx with variable declaration "context"',
+	'when transforming plain jsx with variable declaration  with identifier "context"',
 	async t => {
 		const {context: {transform}} = t;
 		const release = trap();
@@ -169,7 +169,7 @@ test(
 		const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
 		const props = {id: 'foo', className: 'baz'};
 		const actual = ReactTestUtils.renderIntoDocument(<Component {...props}/>);
-		const expected = <div id="foo" className="bar">foo</div>;
+		const expected = <div className="bar">foo</div>;
 		expect(actual, 'to have rendered', expected);
 
 		const {errors} = release();
@@ -267,7 +267,12 @@ test(
 	'when transforming plain jsx with implicit dependencies',
 	async t => {
 		const {context: {transform}} = t;
-		t.throws(transform(mocks.implicitDependencies), Error, 'it should fail');
+		const result = await transform(mocks.implicitDependencies);
+		const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
+
+		t.throws(() => {
+			ReactTestUtils.renderIntoDocument(<StatelessWrapper><Component/></StatelessWrapper>);
+		}, /Dependency is not defined/, 'it should fail');
 	}
 );
 

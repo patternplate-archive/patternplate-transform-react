@@ -77,9 +77,9 @@ const plainAsiFile = getFile({
 const statelessFile = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
-	import React from 'react';
+	var React = require('react');
 
-	export default (props) => {
+	module.exports = props => {
 		return (<div />);
 	};
 	`)),
@@ -89,9 +89,9 @@ const statelessFile = getFile({
 const fullFile = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
-	import React from 'react';
+	var React = require('react');
 
-	export default class FullComponent extends React.Component {
+	module.exports = class FullComponent extends React.Component {
 		render() {
 			return <div />;
 		}
@@ -107,7 +107,7 @@ const reservedPropsDeclaration = getFile({
 		content: 'foo',
 		className: 'bar'
 	};
-	<div {...this.props} className="bar">
+	<div className="bar">
 		{props.content}
 	</div>
 	`))
@@ -120,7 +120,7 @@ const reservedContextDeclaration = getFile({
 		content: 'foo',
 		className: 'bar'
 	};
-	<div {...this.props} className={context.className}>
+	<div className={context.className}>
 		{context.content}
 	</div>
 	`))
@@ -248,9 +248,9 @@ const missingDependencies = getFile({
 const explicitDependencies = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
-	import _ from 'lodash';
-	import fp from 'lodash/fp';
-	import Dependency from 'dependency';
+	var _ = require('lodash');
+	var fp = require('lodash/fp');
+	var Dependency = require('dependency');
 	console.log(_.uniq);
 
 	<div />

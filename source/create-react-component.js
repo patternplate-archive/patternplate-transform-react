@@ -1,11 +1,9 @@
 import React from 'react';
 
-import {
-	exportDefaultDeclaration,
-	isExportDefaultDeclaration
-} from 'babel-types';
+import * as t from 'babel-types';
 import traverse from 'babel-traverse';
 
+import createExport from './create-export';
 import getAuxiliary from './get-auxiliary';
 import getComponentTemplate from './get-component-template';
 import getExports from './get-exports';
@@ -32,12 +30,12 @@ export default (ast, name, globals = {}) => {
 	const exports = getExports(ast);
 
 	// Check for default export
-	const hasDefaultExport = exports.some(isExportDefaultDeclaration);
+	const hasDefaultExport = exports.some(t.isExportDefaultDeclaration);
 
 	// Inject globals into ast
 	injectGlobals(ast, globals);
 
-	// If a default export OR plain jsx was found, assume we deal with
+	// If a default export OR no plain jsx was found, assume we deal with
 	// a complete JSX component definition
 	if (hasDefaultExport || !jsx) {
 		return ast;
@@ -74,7 +72,7 @@ export default (ast, name, globals = {}) => {
 				});
 
 				// Create a default export for it
-				const defaultExport = exportDefaultDeclaration(NAME);
+				const defaultExport = createExport(NAME);
 				path.pushContainer('body', [
 					component,
 					defaultExport

@@ -1,10 +1,7 @@
 // eslint-disable xo/filename-case;
-import {transform} from 'babel-core';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import requireFromString from 'require-from-string';
-
-import pkg from '../package';
 
 const render = (Component, props, children) => {
 	const component = React.createElement(Component, props, children);
@@ -12,7 +9,7 @@ const render = (Component, props, children) => {
 };
 
 const virtualModule = code => {
-	return requireFromString(transform(code, pkg.babel).code);
+	return requireFromString(code);
 };
 
 const virtualRender = (code, options, props, children) => {
