@@ -1,3 +1,13 @@
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/sinnerschrader/patternplate-transform-react/compare/v1.0.2...v1.1.0) (2016-09-27)
+
+
+### Features
+
+* transform jsx via babylon-jsx ([#28](https://github.com/sinnerschrader/patternplate-transform-react/issues/28)) ([9d9349a](https://github.com/sinnerschrader/patternplate-transform-react/commit/9d9349a))
+
+
+
 <a name="1.0.2"></a>
 ## [1.0.2](https://github.com/sinnerschrader/patternplate-transform-react/compare/v1.0.1...v1.0.2) (2016-09-21)
 
