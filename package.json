@@ -113,7 +113,7 @@
   "dependencies": {
     "babel-code-frame": "6.16.0",
     "babel-generator": "6.16.0",
-    "babel-template": "6.15.0",
+    "babel-template": "6.16.0",
     "babel-traverse": "6.15.0",
     "babel-types": "6.15.0",
     "babylon": "6.11.2",
