@@ -120,7 +120,7 @@
     "babylon-ast-dependencies": "1.0.2",
     "babylon-jsx": "1.0.0",
     "compare-semver": "1.1.0",
-    "lodash": "4.16.4",
+    "lodash": "4.16.5",
     "md5": "2.2.1",
     "pascal-case": "1.1.2",
     "resolve": "1.1.7"
