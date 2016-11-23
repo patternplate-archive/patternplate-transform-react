@@ -98,9 +98,9 @@
     "husky": "0.11.9",
     "jsdom": "9.8.3",
     "parallelshell": "2.0.0",
-    "react": "15.3.2",
-    "react-addons-test-utils": "15.3.2",
-    "react-dom": "15.3.2",
+    "react": "15.4.1",
+    "react-addons-test-utils": "15.4.1",
+    "react-dom": "15.4.1",
     "require-from-string": "1.2.1",
     "unexpected": "10.19.0",
     "unexpected-react": "3.3.0",
@@ -108,7 +108,8 @@
     "xo": "0.17.1"
   },
   "peerDependencies": {
-    "react": ">= 0.13"
+    "react": ">= 0.14",
+    "react-dom": ">= 0.14"
   },
   "dependencies": {
     "babel-code-frame": "6.16.0",
