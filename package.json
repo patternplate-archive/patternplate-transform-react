@@ -100,7 +100,7 @@
     "parallelshell": "2.0.0",
     "react": "15.3.2",
     "react-addons-test-utils": "15.3.2",
-    "react-dom": "15.3.2",
+    "react-dom": "15.4.0",
     "require-from-string": "1.2.1",
     "unexpected": "10.19.0",
     "unexpected-react": "3.3.0",
