@@ -1,3 +1,8 @@
+<a name="1.1.3"></a>
+## [1.1.3](https://github.com/sinnerschrader/patternplate-transform-react/compare/v1.1.2...v1.1.3) (2016-12-15)
+
+
+
 <a name="1.1.2"></a>
 ## [1.1.2](https://github.com/sinnerschrader/patternplate-transform-react/compare/v1.1.1...v1.1.2) (2016-09-27)
 
