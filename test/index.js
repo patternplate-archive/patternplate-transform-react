@@ -1,12 +1,10 @@
-import 'babel-register';
-import 'babel-polyfill';
-
 import test from 'ava';
+import {jsdom} from 'jsdom';
 import unexpected from 'unexpected';
 import unexpectedReact from 'unexpected-react';
 import {uniqBy} from 'lodash';
 import * as ReactTestUtils from 'react-addons-test-utils';
-import * as React from 'react'; // eslint-disable-line
+import * as React from 'react';
 
 import factory from '../source';
 
@@ -18,7 +16,11 @@ import {
 } from './_helpers';
 
 import * as mocks from './_mocks';
-import './_env';
+
+// Provide an emulated DOM environment for React testing
+global.document = jsdom('<body></body>');
+global.window = global.document.defaultView;
+global.navigator = global.window.navigator;
 
 const expect = unexpected.clone()
 	.use(unexpectedReact);
