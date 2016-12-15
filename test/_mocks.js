@@ -220,6 +220,15 @@ const implicitDependencies = getFile({
 	}
 });
 
+const injectedGlobals = getFile({
+	...file,
+	buffer: new Buffer(unindent(`
+	<div>
+		{global.foo} - {global.bar}
+	</div>
+	`))
+});
+
 const tagNameishImplicitDependencies = getFile({
 	...file,
 	buffer: new Buffer(unindent(`
@@ -293,6 +302,7 @@ export {
 	fullFile,
 	functionDeclarator,
 	implicitDependencies,
+	injectedGlobals,
 	missingDependencies,
 	OldReact,
 	plainAsiFile,

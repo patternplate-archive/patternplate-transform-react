@@ -325,3 +325,20 @@ test(
 		expect(actual.buffer.split('\n').join(''), 'to contain', expected);
 	}
 );
+
+test(
+	'when transforming plain jsx with injected globals',
+	async t => {
+		const {context: {transform}} = t;
+		const data = {foo: 'foo', bar: 'bar'};
+		const result = await transform(mocks.injectedGlobals, null, {opts: {globals: data}});
+		const Component = virtualModule(result.buffer); // eslint-disable-line no-unused-vars
+
+		const actual = ReactTestUtils.renderIntoDocument(
+			<StatelessWrapper><Component/></StatelessWrapper>
+		);
+
+		const expected = <div>foo - bar</div>;
+		expect(actual, 'to have rendered', expected);
+	}
+);
