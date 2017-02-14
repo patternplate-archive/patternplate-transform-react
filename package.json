@@ -92,7 +92,7 @@
     "babel-preset-es2016-node4": "6.0.1",
     "babel-preset-react": "6.16.0",
     "babel-preset-stage-0": "6.16.0",
-    "babel-register": "6.18.0",
+    "babel-register": "6.23.0",
     "conventional-changelog-cli": "1.2.0",
     "conventional-changelog-lint": "1.1.0",
     "conventional-recommended-bump": "0.3.0",
