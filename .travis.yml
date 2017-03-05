@@ -6,6 +6,7 @@ branches:
   only:
     - master
     - /^release\/.*$/
+    - /^greenkeeper/.*$/
 cache:
   directories:
   - node_modules
