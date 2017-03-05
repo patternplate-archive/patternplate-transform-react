@@ -107,7 +107,7 @@
     "react-dom": "15.4.1",
     "require-from-string": "1.2.1",
     "unexpected": "10.26.3",
-    "unexpected-react": "3.3.2",
+    "unexpected-react": "3.5.0",
     "unindent": "2.0.0",
     "xo": "0.17.1"
   },
