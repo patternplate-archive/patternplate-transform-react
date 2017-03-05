@@ -1,4 +1,6 @@
 # patternplate-transform-react
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/sinnerschrader/patternplate-transform-react.svg)](https://greenkeeper.io/)
 [patternplate](/sinnerschrader/patternplate) transform creating reusable React classes from jsx templates.
 
 ## Installation
