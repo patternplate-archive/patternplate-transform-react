@@ -112,7 +112,7 @@
     "xo": "0.18.1"
   },
   "peerDependencies": {
-    "react": ">= 0.14",
+    "react": ">=15.5.4",
     "react-dom": ">= 0.14"
   },
   "dependencies": {
