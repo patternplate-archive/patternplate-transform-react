@@ -109,7 +109,7 @@
     "unexpected": "10.26.3",
     "unexpected-react": "3.5.2",
     "unindent": "2.0.0",
-    "xo": "0.18.1"
+    "xo": "0.18.2"
   },
   "peerDependencies": {
     "react": ">= 0.14",
