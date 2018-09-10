@@ -1,3 +1,6 @@
+> # ⚠️ Deprecated
+> Use instead: https://patternplate.github.io/
+
 # patternplate-transform-react
 [patternplate](/sinnerschrader/patternplate) transform creating reusable React classes from jsx templates.
 
