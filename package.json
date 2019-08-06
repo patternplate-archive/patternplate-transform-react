@@ -121,7 +121,7 @@
     "babel-template": "6.23.0",
     "babel-traverse": "6.21.0",
     "babel-types": "6.24.1",
-    "babylon": "6.16.1",
+    "babylon": "6.17.2",
     "babylon-ast-dependencies": "1.0.2",
     "babylon-jsx": "1.0.0",
     "compare-semver": "1.1.0",
